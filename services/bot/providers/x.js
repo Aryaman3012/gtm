@@ -167,6 +167,33 @@ async function postThread(tweets) {
 }
 
 /**
+ * sendDirectMessage(participantId, text) — POST
+ * /2/dm_conversations/with/:participant_id/messages
+ *
+ * The default delivery for a scan result (§3.4: "The X account replies with a
+ * private link, not a public verdict, unless the person asking maintains the
+ * repo"). A public post about someone else's repository is a verdict delivered
+ * in front of an audience; a DM is the same information offered to the person
+ * who asked for it.
+ *
+ * Same credential requirements and same untested-on-this-VPS caveat as
+ * postTweet. A DM to someone who does not follow the account can fail; callers
+ * must treat failure as "not delivered" and never fall back to posting the
+ * findings publicly.
+ */
+async function sendDirectMessage(participantId, text) {
+  requireWriteCredentials();
+  if (!participantId) throw new Error('sendDirectMessage requires a participant id');
+  return apiRequest({
+    method: 'POST',
+    hostname: 'api.twitter.com',
+    apiPath: `/2/dm_conversations/with/${encodeURIComponent(participantId)}/messages`,
+    body: { text },
+    bearerToken: process.env.X_BEARER_TOKEN || '',
+  });
+}
+
+/**
  * getMentions() — GET /2/users/:id/mentions
  * Requires a bearer token and the bot account's numeric user id (X_USER_ID, documented
  * alongside the other env vars if this path is ever activated).
@@ -186,6 +213,7 @@ module.exports = {
   NoCredentialsError,
   postTweet,
   postThread,
+  sendDirectMessage,
   getMentions,
   hasReadCredentials,
   hasWriteCredentials,

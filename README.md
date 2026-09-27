@@ -18,6 +18,7 @@ GTM candidate work sample by Aryaman Singh.
 | [`skills/skillsdrift-bridge/`](skills/skillsdrift-bridge/) | Source for that skill: instructions, triage scripts, message templates and sample reports |
 | [`dist/skillsdrift-bridge.skill`](dist/skillsdrift-bridge.skill) | The packaged skill, ready to install in Claude |
 | [`waitlist/`](waitlist/) | The pilot waitlist behind the report's CTA: a dependency-free Node service and its systemd unit. Stores job title and company domain, and nothing else |
+| [`services/`](services/) | The scanner, card generator, GitHub App and X bot. 49 tests across three suites, passing on Linux and macOS |
 
 ## The position in five lines
 
@@ -58,9 +59,9 @@ See [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) for what it does, the expec
 | skillsdrift-bridge skill | ✅ Built, dry-run tested twice | This repo |
 | skillsdrift CLI: scan, drift diffs, 11 security heuristics, three-layer report, import manifest, check-in mode | ✅ Built; 10-test suite passes on Linux and macOS | [`cli/`](cli/) in this repo |
 | State of Skill Drift index + cards | ✅ Built and **live** | <https://drift.aryaman.tech> |
-| Scanner service (public repo scans, weekly delta) | Built (per build logs) | VPS, not yet in this repo |
-| GitHub App service | Built (per build logs); switching to issues/checks instead of cross-repo PRs | VPS, not yet in this repo |
-| X bot (@skillsdrift) | Built as drafts only; switching to private replies | VPS, not yet in this repo |
+| Scanner service (public repo scans, weekly delta) | ✅ Built; 10 tests pass | [`services/scanner/`](services/scanner/) |
+| GitHub App service | ✅ Built; opens **issues, not PRs** (§1.8 step 3) — a PR only on a recorded opt-in. 8 tests pass | [`services/app/`](services/app/) |
+| X bot (@skillsdrift) | ✅ Built; **private replies by default** (§3.4) — public only for a verified maintainer. Drafts still need human approval. 32 tests pass | [`services/bot/`](services/bot/) |
 | Waitlist (job title + company domain, per 3.5) | ✅ Built and **live** | [`waitlist/`](waitlist/) · <https://drift.aryaman.tech/waitlist> |
 | Team scan, forwarded-note output, opt-in ping and rollup, reframed data drop | Designed | Next |
 | drift.aryaman.tech | ✅ Serving over HTTPS (cert valid to 26 Dec 2026, auto-renewing) | VPS |

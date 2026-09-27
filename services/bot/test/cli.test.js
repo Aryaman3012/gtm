@@ -138,7 +138,12 @@ test('post-approved missing "approved" key entirely also refuses', () => {
 test('post-approved with approved:true reaches the provider and fails with NoCredentialsError', async () => {
   const draftsDir = helpers.makeScratchDir('skillsdrift-bot-postcheck3-');
   const filePath = path.join(draftsDir, 'approved.json');
-  fs.writeFileSync(filePath, JSON.stringify({ approved: true, tweets: ['one', 'two'] }));
+  // A complete draft under the §3.4 delivery policy: private by default, with a
+  // recipient, so the credential check is what stops it rather than the policy gate.
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify({ approved: true, delivery: 'dm', dmRecipientId: '12345', tweets: ['one', 'two'] })
+  );
 
   // Use the REAL provider (no stub) — no credentials exist on this VPS, so this must
   // throw NoCredentialsError, not silently succeed and not attempt a real network call.

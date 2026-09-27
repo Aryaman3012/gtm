@@ -1,16 +1,30 @@
 'use strict';
 
-// Builds the "Drift scorecard" PR (title + body) per build/specs/05-github-app.md
-// §6, adapted per the R15 brief. Never auto-fixes anything: the only files this
-// module would ever put in a branch are a regenerated report/manifest — NEVER a
-// file under `.claude/skills/` or `.codex/`. See `filesToInclude` below.
+// Builds the "Drift scorecard" notice (title + body) per
+// build/specs/05-github-app.md §6, adapted per the R15 brief.
 //
-// Test mode (env APP_TEST_MODE=1, or { test: true }): writes the composed PR
-// object to data/pr-draft.json instead of touching GitHub at all.
-// Real mode: shells out to `gh pr create` (zero-dep, per the brief — no
-// Octokit). APP_GH_TOKEN, if set, is passed through to the `gh` subprocess as
-// GH_TOKEN. The real path is implemented but intentionally not exercised by
-// the test suite (no live GitHub calls in tests).
+// THE DEFAULT IS AN ISSUE, NOT A PULL REQUEST. §1.8 step 3: "It never opens
+// pull requests in other teams' repos uninvited; a colleague's forwarded note
+// is welcome, while an automated PR reads as spam. A PR is opened only when the
+// repo owner asks." The code already knew this in spirit — see `filesToInclude`
+// below, which notes there is no code diff to merge and the body is the whole
+// deliverable. A pull request with no diff is the wrong primitive: it sits in a
+// review queue asking to be merged, when what it wants is a decision. An issue
+// asks for the decision.
+//
+// A pull request is opened only on an explicit ask, recorded per installation
+// as `prOptIn: true` in data/installations.json, or forced with
+// { channel: 'pr' } / APP_ALLOW_PR=1. Never inferred.
+//
+// Never auto-fixes anything: the only files this module would ever put in a
+// branch are a regenerated report/manifest — NEVER a file under
+// `.claude/skills/` or `.codex/`.
+//
+// Test mode (env APP_TEST_MODE=1, or { test: true }): writes the composed
+// notice to data/notice-draft.json instead of touching GitHub at all.
+// Real mode: shells out to `gh issue create` (or `gh pr create` when opted
+// in) — zero-dep, per the brief, no Octokit. APP_GH_TOKEN, if set, is passed
+// through as GH_TOKEN.
 
 const fs = require('fs');
 const path = require('path');
@@ -144,7 +158,8 @@ function affectedDirs(scan) {
   return Array.from(new Set(dirs));
 }
 
-function buildBody({ scan, repoPath, installerLogin, cardUrl, reviewerInfo }) {
+function buildBody({ scan, repoPath, installerLogin, cardUrl, reviewerInfo, channel = 'issue' }) {
+  const noun = channel === 'pr' ? 'pull request' : 'issue';
   const findingsList = buildFindingsList(scan, repoPath);
   const reviewerLine = reviewerInfo.reviewerList.length
     ? reviewerInfo.reviewerList.join(', ')
@@ -153,7 +168,7 @@ function buildBody({ scan, repoPath, installerLogin, cardUrl, reviewerInfo }) {
 
   return `### Disclosure
 
-This PR was opened automatically by the skillsdrift GitHub App — a candidate exercise for
+This ${noun} was opened automatically by the skillsdrift GitHub App — a candidate exercise for
 Atlan, not an Atlan product. It was installed on this repo by ${installerLogin}.
 
 ### What changed
@@ -166,10 +181,16 @@ ${findingsList}
 
 Full scorecard: ${cardUrl}
 
+### Why this is an issue and not a pull request
+
+There is nothing here to merge. Picking the canonical copy is a decision for the people who own
+these skills, and a mechanical merge would just create one more diverged copy. This app does not
+open pull requests in a repo uninvited. If your team would rather receive these as a PR, say so
+on this issue and we will switch this installation over.
+
 ### How to resolve this
 
-This bot does not auto-fix drift — a mechanical merge here would just create a fourth diverged
-copy. To resolve it:
+To resolve it:
 
 1. Pick the canonical version of the affected skill(s) with the owning team.
 2. Run the manual check-in flow: \`node skillsdrift.js <path> --checkin\` and commit
@@ -182,14 +203,26 @@ copy. To resolve it:
 This will drift again the moment someone edits a copy without checking in through one source.
 A weekly scan will keep finding it; only a governed source stops it recurring.
 
-close this PR if unwanted — no auto-changes are ever made.
+Close this ${noun} if it is unwanted — no changes are ever made to your files, and you can
+turn the weekly check off from the app settings.
 
 ---
 ${extraNotes}_Reviewers requested via CODEOWNERS: ${reviewerLine}_
 `;
 }
 
-function createPR({ scan, repoPath, repoSlug, installerLogin, test }) {
+// Resolve the delivery channel. An issue unless the repo owner has explicitly
+// asked for pull requests — recorded per installation, passed in, or forced by
+// env. Never inferred from anything about the repo.
+function resolveChannel({ channel, prOptIn }) {
+  if (channel === 'pr' || channel === 'issue') return channel;
+  if (prOptIn === true) return 'pr';
+  if (process.env.APP_ALLOW_PR === '1') return 'pr';
+  return 'issue';
+}
+
+function createNotice({ scan, repoPath, repoSlug, installerLogin, test, channel, prOptIn }) {
+  const resolvedChannel = resolveChannel({ channel, prOptIn });
   const resolvedInstaller = installerLogin || 'unknown';
   const top = pickTopFinding(scan);
   const affected = affectedDirs(scan);
@@ -198,7 +231,7 @@ function createPR({ scan, repoPath, repoSlug, installerLogin, test }) {
   const title = buildTitle(top, teamCount);
   const slug = sanitizeSlug(repoSlug);
   const cardUrl = generateCard(scan, slug);
-  const body = buildBody({ scan, repoPath, installerLogin: resolvedInstaller, cardUrl, reviewerInfo });
+  const body = buildBody({ scan, repoPath, installerLogin: resolvedInstaller, cardUrl, reviewerInfo, channel: resolvedChannel });
 
   // No-auto-fix invariant (T5): the only files this PR's branch would ever
   // contain are a regenerated report/manifest — never a modification to any
@@ -211,6 +244,7 @@ function createPR({ scan, repoPath, repoSlug, installerLogin, test }) {
 
   const draft = {
     repoSlug,
+    channel: resolvedChannel,
     installerLogin: resolvedInstaller,
     title,
     body,
@@ -225,16 +259,19 @@ function createPR({ scan, repoPath, repoSlug, installerLogin, test }) {
 
   if (isTestMode) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
-    const draftPath = path.join(DATA_DIR, 'pr-draft.json');
+    const draftPath = path.join(DATA_DIR, 'notice-draft.json');
     fs.writeFileSync(draftPath, JSON.stringify(draft, null, 2) + '\n', 'utf8');
     return Object.assign({ mode: 'test', draftPath }, draft);
   }
 
-  // Real mode: shell out to `gh pr create` — zero-dep, works today (per the
-  // brief this replaces spec 05's Octokit path). Not exercised in tests.
+  // Real mode: shell out to `gh` — zero-dep, works today (per the brief this
+  // replaces spec 05's Octokit path). Not exercised in tests.
   const env = Object.assign({}, process.env);
   if (process.env.APP_GH_TOKEN) env.GH_TOKEN = process.env.APP_GH_TOKEN;
-  const args = ['pr', 'create', '--title', title, '--body', body, '--repo', repoSlug];
+  const args =
+    resolvedChannel === 'pr'
+      ? ['pr', 'create', '--title', title, '--body', body, '--repo', repoSlug]
+      : ['issue', 'create', '--title', title, '--body', body, '--repo', repoSlug];
   let output;
   try {
     output = execFileSync('gh', args, { cwd: repoPath, env, encoding: 'utf8' });
@@ -244,8 +281,16 @@ function createPR({ scan, repoPath, repoSlug, installerLogin, test }) {
   return Object.assign({ mode: 'real', output }, draft);
 }
 
+// Explicit opt-in helper: only call this when a repo owner has asked for pull
+// requests. Kept separate so an uninvited PR cannot happen by passing the
+// wrong argument to the general entrypoint.
+function createPullRequestOnRequest(opts) {
+  return createNotice(Object.assign({}, opts, { channel: 'pr' }));
+}
+
 module.exports = {
-  createPR,
+  createNotice,
+  createPullRequestOnRequest,
   pickTopFinding,
   buildTitle,
   buildFindingsList,

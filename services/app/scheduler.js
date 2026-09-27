@@ -9,7 +9,7 @@
 // engine as a subprocess against whichever of .claude/skills / .codex exist
 // -> compare against the last stored scan for this repo -> if there are
 // findings AND they materially changed (or there's no prior scan at all),
-// hand off to pr-creator.js; otherwise skip and log "no PR needed". The
+// hand off to pr-creator.js; otherwise skip and log "no notice needed". The
 // actual GitHub-touching work (scanning is already done here; PR
 // opening/updating happens in pr-creator.js) never happens inline in the
 // webhook response — service.js only records install/dirty state.
@@ -18,7 +18,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { createPR } = require('./pr-creator');
+const { createNotice } = require('./pr-creator');
 
 const ARTIFACT_CLI = require('../lib/skillsdrift-path').cli();
 const DATA_DIR = path.join(__dirname, 'data');
@@ -100,7 +100,7 @@ function findingsFingerprint(scan) {
 }
 
 function runScheduler(opts) {
-  const { repoSlug, test = false, installerLogin = 'unknown' } = opts;
+  const { repoSlug, test = false, installerLogin = 'unknown', prOptIn = false } = opts;
   let repoPath = opts.repoPath;
 
   if (!repoSlug) throw new Error('runScheduler requires repoSlug');
@@ -123,12 +123,12 @@ function runScheduler(opts) {
   let action;
 
   if (!findings) {
-    action = 'no PR needed: no findings';
+    action = 'no notice needed: no findings';
   } else if (!materiallyChanged) {
-    action = 'no PR needed: findings unchanged since last run';
+    action = 'no notice needed: findings unchanged since last run';
   } else {
-    prResult = createPR({ scan, repoPath, repoSlug, installerLogin, test });
-    action = 'PR opened/updated (see pr-creator output)';
+    prResult = createNotice({ scan, repoPath, repoSlug, installerLogin, test, prOptIn });
+    action = `${prResult.channel === 'pr' ? 'PR' : 'Issue'} opened/updated (see pr-creator output)`;
   }
 
   const newState = {

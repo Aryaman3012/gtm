@@ -1,0 +1,15 @@
+{
+  "repoSlug": "test-org/idempotency-repo",
+  "channel": "issue",
+  "installerLogin": "aryaman3012",
+  "title": "Drift scorecard: 2 version(s) of pdf-gen diverged, used by 0 teammate(s), 1 file(s) affected",
+  "body": "### Disclosure\n\nThis issue was opened automatically by the skillsdrift GitHub App — a candidate exercise for\nAtlan, not an Atlan product. It was installed on this repo by aryaman3012.\n\n### What changed\n\nskillsdrift's weekly scan found:\n\n- `pdf-gen` diverged: 2 versions found across `.claude/skills/pdf-gen` and `.codex/pdf-gen` (1 file(s) changed, severity: medium).\n\n### Card\n\nFull scorecard: https://drift.aryaman.tech/cards/test-org__idempotency-repo.html\n\n### Why this is an issue and not a pull request\n\nThere is nothing here to merge. Picking the canonical copy is a decision for the people who own\nthese skills, and a mechanical merge would just create one more diverged copy. This app does not\nopen pull requests in a repo uninvited. If your team would rather receive these as a PR, say so\non this issue and we will switch this installation over.\n\n### How to resolve this\n\nTo resolve it:\n\n1. Pick the canonical version of the affected skill(s) with the owning team.\n2. Run the manual check-in flow: `node skillsdrift.js <path> --checkin` and commit\n   `.skillsdrift-report.md` so the next scan has a deterministic diff.\n3. If your team wants this tracked centrally instead of re-discovered every week, import into\n   the Registry: __WAITLIST_URL__.\n\n### Recurrence close\n\nThis will drift again the moment someone edits a copy without checking in through one source.\nA weekly scan will keep finding it; only a governed source stops it recurring.\n\nClose this issue if it is unwanted — no changes are ever made to your files, and you can\nturn the weekly check off from the app settings.\n\n---\n_Reviewers requested via CODEOWNERS: No CODEOWNERS entry matched — consider adding a CODEOWNERS file for the affected skill(s)._\n",
+  "reviewerList": [],
+  "teamCount": 0,
+  "filesToInclude": [
+    ".skillsdrift-report.md",
+    ".skillsdrift-manifest.json"
+  ],
+  "cardUrl": "https://drift.aryaman.tech/cards/test-org__idempotency-repo.html",
+  "createdAt": "2026-09-27T17:27:12.749Z"
+}

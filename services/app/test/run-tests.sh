@@ -8,7 +8,7 @@ APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Fresh data dir each run so tests are deterministic and don't accumulate
 # state across invocations (installations.json, per-repo scan state,
-# pr-draft.json all live under here).
+# notice-draft.json all live under here).
 rm -rf "$APP_DIR/data"
 mkdir -p "$APP_DIR/data/cards"
 

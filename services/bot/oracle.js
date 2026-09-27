@@ -319,27 +319,67 @@ function buildUsageHelpReply() {
 }
 
 /**
+ * resolveDelivery({ slug, requester }) — decide whether findings may be posted
+ * publicly, or must go by DM.
+ *
+ * §3.4: "The X account replies with a private link, not a public verdict,
+ * unless the person asking maintains the repo." A public post about someone
+ * else's repository is a verdict delivered in front of an audience, and this
+ * project's whole position is that a forwarded note is welcome where a
+ * broadcast is not.
+ *
+ * Public requires `requester.maintainerOf` to contain the slug — a list the
+ * caller supplies only after verifying it. It is never inferred from the
+ * handle, the display name, or anything the requester claims, because an X
+ * handle proves nothing about a GitHub repository.
+ */
+function resolveDelivery({ slug, requester = {} }) {
+  const maintains =
+    Array.isArray(requester.maintainerOf) &&
+    requester.maintainerOf.some((s) => String(s).toLowerCase() === String(slug).toLowerCase());
+  return maintains ? 'public' : 'dm';
+}
+
+// What the bot may say in public when the findings themselves are going by DM.
+// Deliberately carries no counts, no severities, no verdict — only that a reply
+// was sent. Anything more is the public verdict the policy forbids.
+function buildPrivateAck(slug) {
+  return `Scanned it — sending you the result by DM so the details stay with you. If you maintain ${slug} and would rather this were public, say so and I'll reply here instead.`;
+}
+
+/**
  * handleMention(text, opts) — top-level entry point. Parses the mention, runs the
  * scan (or reuses cache), builds a reply object: { status, tweets, cardUrl?, repeat? }.
  * Never throws for expected failure modes (malformed request, clone failure, no skills);
  * only throws on truly unexpected internal errors.
+ *
+ * The reply also carries `delivery` ('dm' by default, 'public' only for a
+ * verified maintainer) and, when delivery is 'dm', `publicAck` — the one
+ * finding-free line that may be posted in the open.
  */
 function handleMention(text, opts = {}) {
   const parsed = parseMentionText(text);
   if (!parsed) {
-    return { status: 'usage-help', ...buildUsageHelpReply() };
+    // Usage help carries no findings, so it is safe in public.
+    return { status: 'usage-help', delivery: 'public', ...buildUsageHelpReply() };
   }
   const { slug } = parsed;
+  const delivery = resolveDelivery({ slug, requester: opts.requester });
+  const withDelivery = (reply) =>
+    delivery === 'dm'
+      ? { ...reply, delivery, publicAck: buildPrivateAck(slug) }
+      : { ...reply, delivery };
   const scanResult = scanRepo(slug, opts);
 
   if (scanResult.status === 'repeat') {
-    return { status: 'repeat', slug, ...buildRepeatReply(slug, scanResult.draftSummary) };
+    return withDelivery({ status: 'repeat', slug, ...buildRepeatReply(slug, scanResult.draftSummary) });
   }
   if (scanResult.status === 'clone-failed') {
-    return { status: 'clone-failed', slug, ...buildCloneFailedReply(slug) };
+    // "Couldn't scan that" names no findings, so it may go back in public.
+    return { status: 'clone-failed', slug, delivery: 'public', ...buildCloneFailedReply(slug) };
   }
   if (scanResult.status === 'no-skills') {
-    return { status: 'no-skills', slug, ...buildNoSkillsReply(slug) };
+    return { status: 'no-skills', slug, delivery: 'public', ...buildNoSkillsReply(slug) };
   }
 
   // status === 'ok'
@@ -349,10 +389,12 @@ function handleMention(text, opts = {}) {
   const cache = loadCache(cacheFile);
   cache[slug] = { lastScannedAt: new Date(now).toISOString(), draftSummary };
   saveCache(cacheFile, cache);
-  return { status: 'ok', slug, ...draftSummary };
+  return withDelivery({ status: 'ok', slug, ...draftSummary });
 }
 
 module.exports = {
+  resolveDelivery,
+  buildPrivateAck,
   parseMentionText,
   extractSlug,
   scanRepo,

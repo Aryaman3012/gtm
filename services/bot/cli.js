@@ -59,6 +59,9 @@ function draftScan(repoArg, opts = {}) {
     status: 'draft',
     approved: false,
     replyStatus: reply.status,
+    // §3.4 delivery policy, decided at scan time and carried to the send.
+    delivery: reply.delivery || 'dm',
+    publicAck: reply.publicAck,
     tweets: reply.tweets,
   };
   writeDraftFile(filePath, draft);
@@ -88,6 +91,10 @@ function processInbox(opts = {}) {
       status: 'draft',
       approved: false,
       replyStatus: reply.status,
+      delivery: reply.delivery || 'dm',
+      publicAck: reply.publicAck,
+      // Who the DM goes to. Never guessed — it comes from the mention itself.
+      dmRecipientId: mention.authorId || (mention.author && mention.author.id) || undefined,
       tweets: reply.tweets,
     };
     writeDraftFile(filePath, draft);
@@ -120,6 +127,35 @@ function postApproved(draftFilePath, opts = {}) {
   if (tweets.length === 0) {
     throw new Error(`Refusing to post: ${draftFilePath} has an empty tweets[] array.`);
   }
+
+  // §3.4 delivery gate. A draft with no delivery field predates this policy and
+  // is treated as private, because the failure that matters is a correct scan
+  // shown to the wrong audience. Going public is opt-in and must be explicit.
+  const delivery = draft.delivery || 'dm';
+  if (delivery !== 'public' && delivery !== 'dm') {
+    throw new Error(`Refusing to post: unknown delivery "${delivery}" in ${draftFilePath}.`);
+  }
+
+  if (delivery === 'dm') {
+    if (!draft.dmRecipientId) {
+      throw new Error(
+        `Refusing to post: ${draftFilePath} is delivery "dm" but has no dmRecipientId. ` +
+          'Findings about a repo the requester does not maintain are never posted publicly ' +
+          '(§3.4), so there is nowhere to send this. Add the recipient id, or set ' +
+          '"delivery": "public" if the requester has been verified as a maintainer.'
+      );
+    }
+    // Promise chaining rather than async/await: every refusal above must throw
+    // synchronously, before any provider or credential code is reached.
+    return Promise.resolve(provider.sendDirectMessage(draft.dmRecipientId, tweets.join('\n\n'))).then(
+      (dmResult) => {
+        // The only thing that may appear in public is the finding-free line.
+        if (!draft.publicAck) return [dmResult];
+        return Promise.resolve(provider.postTweet(draft.publicAck)).then((ack) => [dmResult, ack]);
+      }
+    );
+  }
+
   if (tweets.length === 1) {
     return provider.postTweet(tweets[0]);
   }

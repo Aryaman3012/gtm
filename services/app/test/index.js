@@ -5,12 +5,13 @@
 // live network / live GitHub calls anywhere: the webhook test talks only to
 // an in-process service.js instance on an ephemeral localhost port, and the
 // scheduler/pr-creator tests run entirely against local fixture repos in
-// `test: true` mode (pr-creator writes data/pr-draft.json instead of
+// `test: true` mode (pr-creator writes data/notice-draft.json instead of
 // shelling out to `gh`).
 
 const MODULES = [
   './test-signature',
   './test-scan-to-pr',
+  './test-issue-not-pr',
   './test-no-auto-fix',
   './test-codeowners',
   './test-idempotency',

@@ -2,7 +2,7 @@
   "repoSlug": "test-org/clean-repo",
   "lastScan": {
     "tool": "skillsdrift",
-    "generatedAt": "2026-09-27T17:04:54.660Z",
+    "generatedAt": "2026-09-27T17:27:12.839Z",
     "scannedPaths": [
       "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo-clean/.claude/skills"
     ],
@@ -26,7 +26,7 @@
     "securityNote": "Informed by Snyk's ToxicSkills research: 36.82% of scanned public skills (1,467) had at least one security flaw, including 76 malicious credential-theft payloads. Agent skills are a software supply chain — treat them like one.",
     "waitlistUrl": "https://drift.aryaman.tech/waitlist",
     "fingerprint": "{\"scorecard\":{\"skillsScanned\":1,\"driftedPairs\":0,\"unowned\":0,\"unversioned\":0,\"securityFlagged\":0},\"drift\":[],\"ownership\":[],\"version\":[],\"security\":[]}",
-    "scannedAt": "2026-09-27T17:04:54.664Z"
+    "scannedAt": "2026-09-27T17:27:12.844Z"
   },
   "lastPR": null,
   "dirty": false
