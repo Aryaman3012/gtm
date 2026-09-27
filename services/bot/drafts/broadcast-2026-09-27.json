@@ -1,0 +1,18 @@
+{
+  "runId": "2026-09-26",
+  "generatedAt": "2026-09-27T18:45:14.386Z",
+  "status": "draft",
+  "approved": false,
+  "tweets": [
+    "1/10 Ran skillsdrift across 4 public skill repos this week. 100% of the 951 scanned skills show at least one governance gap.",
+    "2/10 Security (category-level only, no repo named): 10x \"hardcoded secret-shaped assignment\" pattern found across the sample.",
+    "3/10 Security (category-level only, no repo named): 4x \"sudo invocation\" pattern found across the sample.",
+    "4/10 Security (category-level only, no repo named): 1x \"eval( call\" pattern found across the sample.",
+    "5/10 Security (category-level only, no repo named): 4x \"curl/wget | bash pipe\" pattern found across the sample.",
+    "6/10 Security (category-level only, no repo named): 2x \"reverse shell / raw socket redirect\" pattern found across the sample.",
+    "7/10 Security (category-level only, no repo named): 10x \"network call to a raw IP address\" pattern found across the sample.",
+    "8/10 This recurs the moment anyone edits a copy again — a scan finds it, only a governed source stops it from coming back.",
+    "9/10 Disclosure: this reply is a candidate exercise for Atlan, not an Atlan product — methodology in the card.",
+    "10/10 Per-repo cards: https://drift.aryaman.tech/cards/"
+  ]
+}

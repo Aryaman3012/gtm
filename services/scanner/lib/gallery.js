@@ -49,7 +49,6 @@ function renderGallery(state, opts = {}) {
           <td class="num">${r.skillsScanned}</td>
           <td class="num">${r.drifted}</td>
           <td class="num">${r.unowned}</td>
-          <td class="num">${r.securityFlagged ? `<span class="flag">${r.securityFlagged}</span>` : '0'}</td>
         </tr>`;
     })
     .join('\n');
@@ -375,14 +374,17 @@ ${findingRows || '        <li><span class="cat">Nothing found this run</span><sp
         <h2>By repository</h2>
         <div class="tablewrap">
           <table>
-            <caption>Follow a repository name for its full card.</caption>
+            <caption>
+              Follow a repository name for its full card. Security findings are deliberately
+              absent from this table: they are reported by category across the whole sample and
+              never tied to a named repository.
+            </caption>
             <thead>
               <tr>
                 <th scope="col">Repository</th>
                 <th scope="col" class="num">Skills</th>
                 <th scope="col" class="num">Drifted</th>
                 <th scope="col" class="num">No owner field</th>
-                <th scope="col" class="num">Flagged</th>
               </tr>
             </thead>
             <tbody>
