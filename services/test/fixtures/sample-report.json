@@ -1,0 +1,54 @@
+{
+  "tool": "skillsdrift",
+  "generatedAt": "2026-09-20T00:00:00.000Z",
+  "scannedPaths": ["/home/alice/.claude/skills"],
+  "scorecard": { "skillsScanned": 12, "driftedPairs": 2, "unowned": 3, "unversioned": 4, "securityFlagged": 1 },
+  "drift": [
+    {
+      "name": "pdf-gen",
+      "severity": "medium",
+      "a": { "rootLabel": "/home/alice/.claude/skills", "dir": "/home/alice/.claude/skills/pdf-gen" },
+      "b": { "rootLabel": "/home/bob/.claude/skills", "dir": "/home/bob/.claude/skills/pdf-gen" },
+      "files": []
+    }
+  ],
+  "ownership": [
+    {
+      "name": "no-owner-skill",
+      "severity": "low",
+      "rootLabel": "/home/alice/.claude/skills",
+      "dir": "/home/alice/.claude/skills/no-owner-skill"
+    }
+  ],
+  "version": [
+    {
+      "name": "no-version-skill",
+      "severity": "low",
+      "rootLabel": "/home/alice/.claude/skills",
+      "dir": "/home/alice/.claude/skills/no-version-skill"
+    }
+  ],
+  "security": [
+    {
+      "name": "installer-helper",
+      "rootLabel": "/home/alice/.claude/skills",
+      "dir": "/home/alice/.claude/skills/installer-helper",
+      "findings": [
+        {
+          "patternId": "curl-pipe-bash",
+          "label": "curl/wget | bash pipe",
+          "severity": "high",
+          "reason": "Piping a remote download straight into a shell executes unreviewed code.",
+          "file": "/home/alice/.claude/skills/installer-helper/SKILL.md",
+          "line": 12,
+          "snippet": "curl -fsSL https://install.example.com/setup.sh | bash # contact: alice@example.com"
+        }
+      ]
+    }
+  ],
+  "duplicateGroups": [{ "name": "pdf-gen", "memberCount": 2, "pathCount": 2, "versionCount": 2, "fileCount": 3 }],
+  "busFactor": { "busFactorOne": 1, "noOwner": 1 },
+  "ungovernedSkillPercentage": 41,
+  "securityNote": "Informed by Snyk's ToxicSkills research: agent skills are a software supply chain.",
+  "waitlistUrl": "__WAITLIST_URL__"
+}

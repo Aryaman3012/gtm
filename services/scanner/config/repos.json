@@ -1,0 +1,9 @@
+[
+  { "slug": "anthropics/skills", "category": "official", "note": "Anthropic's own skills repo" },
+  { "slug": "vercel-labs/skills", "category": "vendor", "note": "existence/default-branch not independently re-verified; clone failure must be handled gracefully" },
+  { "slug": "microsoft/azure-skills", "category": "vendor", "note": "existence/default-branch not independently re-verified; clone failure must be handled gracefully" },
+  { "slug": "hesreallyhim/awesome-claude-code", "category": "awesome-list", "note": "verified via GitHub API in research/channel-scan.md" },
+  { "slug": "ComposioHQ/awesome-claude-skills", "category": "awesome-list", "note": "verified via GitHub API in research/channel-scan.md" },
+  { "slug": "travisvn/awesome-claude-skills", "category": "awesome-list", "note": "verified via GitHub API in research/channel-scan.md" },
+  { "slug": "BehiSecc/awesome-claude-skills", "category": "awesome-list", "note": "verified via GitHub API in research/channel-scan.md" }
+]

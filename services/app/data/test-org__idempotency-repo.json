@@ -1,0 +1,98 @@
+{
+  "repoSlug": "test-org/idempotency-repo",
+  "lastScan": {
+    "tool": "skillsdrift",
+    "generatedAt": "2026-09-27T17:04:54.623Z",
+    "scannedPaths": [
+      "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.claude/skills",
+      "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.codex"
+    ],
+    "scorecard": {
+      "skillsScanned": 2,
+      "driftedPairs": 1,
+      "unowned": 0,
+      "unversioned": 0,
+      "securityFlagged": 0
+    },
+    "drift": [
+      {
+        "name": "pdf-gen",
+        "severity": "medium",
+        "a": {
+          "rootLabel": "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.claude/skills",
+          "dir": "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.claude/skills/pdf-gen"
+        },
+        "b": {
+          "rootLabel": "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.codex",
+          "dir": "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.codex/pdf-gen"
+        },
+        "files": [
+          {
+            "relPath": "SKILL.md",
+            "status": "changed",
+            "changes": [
+              {
+                "type": "remove",
+                "line": 5,
+                "text": "version: 1.0.0"
+              },
+              {
+                "type": "add",
+                "line": 5,
+                "text": "version: 1.1.0"
+              },
+              {
+                "type": "remove",
+                "line": 18,
+                "text": "Uses a headless Chromium print-to-PDF call under the hood."
+              },
+              {
+                "type": "add",
+                "line": 18,
+                "text": "Uses wkhtmltopdf under the hood."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "ownership": [],
+    "version": [],
+    "security": [],
+    "duplicateGroups": [
+      {
+        "name": "pdf-gen",
+        "memberCount": 2,
+        "pathCount": 2,
+        "versionCount": 2,
+        "fileCount": 1
+      }
+    ],
+    "busFactor": {
+      "busFactorOne": 1,
+      "noOwner": 0
+    },
+    "ungovernedSkillPercentage": 0,
+    "securityNote": "Informed by Snyk's ToxicSkills research: 36.82% of scanned public skills (1,467) had at least one security flaw, including 76 malicious credential-theft payloads. Agent skills are a software supply chain — treat them like one.",
+    "waitlistUrl": "https://drift.aryaman.tech/waitlist",
+    "fingerprint": "{\"scorecard\":{\"skillsScanned\":2,\"driftedPairs\":1,\"unowned\":0,\"unversioned\":0,\"securityFlagged\":0},\"drift\":[\"pdf-gen:medium:/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.claude/skills/pdf-gen:/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/fixtures/fixture-repo/.codex/pdf-gen:1\"],\"ownership\":[],\"version\":[],\"security\":[]}",
+    "scannedAt": "2026-09-27T17:04:54.625Z"
+  },
+  "lastPR": {
+    "mode": "test",
+    "draftPath": "/Users/aryaman/Desktop/atlan-gtm-challenge/services/app/data/pr-draft.json",
+    "repoSlug": "test-org/idempotency-repo",
+    "installerLogin": "aryaman3012",
+    "title": "Drift scorecard: 2 version(s) of pdf-gen diverged, used by 0 teammate(s), 1 file(s) affected",
+    "body": "### Disclosure\n\nThis PR was opened automatically by the skillsdrift GitHub App — a candidate exercise for\nAtlan, not an Atlan product. It was installed on this repo by aryaman3012.\n\n### What changed\n\nskillsdrift's weekly scan found:\n\n- `pdf-gen` diverged: 2 versions found across `.claude/skills/pdf-gen` and `.codex/pdf-gen` (1 file(s) changed, severity: medium).\n\n### Card\n\nFull scorecard: https://drift.aryaman.tech/cards/test-org__idempotency-repo.html\n\n### How to resolve this\n\nThis bot does not auto-fix drift — a mechanical merge here would just create a fourth diverged\ncopy. To resolve it:\n\n1. Pick the canonical version of the affected skill(s) with the owning team.\n2. Run the manual check-in flow: `node skillsdrift.js <path> --checkin` and commit\n   `.skillsdrift-report.md` so the next scan has a deterministic diff.\n3. If your team wants this tracked centrally instead of re-discovered every week, import into\n   the Registry: __WAITLIST_URL__.\n\n### Recurrence close\n\nThis will drift again the moment someone edits a copy without checking in through one source.\nA weekly scan will keep finding it; only a governed source stops it recurring.\n\nclose this PR if unwanted — no auto-changes are ever made.\n\n---\n_Reviewers requested via CODEOWNERS: No CODEOWNERS entry matched — consider adding a CODEOWNERS file for the affected skill(s)._\n",
+    "reviewerList": [],
+    "teamCount": 0,
+    "filesToInclude": [
+      ".skillsdrift-report.md",
+      ".skillsdrift-manifest.json"
+    ],
+    "cardUrl": "https://drift.aryaman.tech/cards/test-org__idempotency-repo.html",
+    "createdAt": "2026-09-27T17:04:54.565Z"
+  },
+  "dirty": false
+}

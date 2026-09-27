@@ -1,0 +1,14 @@
+{
+  "repo": "anthropics/skills",
+  "generatedAt": "2026-09-26T12:28:35.444Z",
+  "status": "draft",
+  "approved": false,
+  "replyStatus": "ok",
+  "tweets": [
+    "1/5 Ran a skills scan on anthropics/skills — found 12 security-pattern flag(s) (category-level, no repo-linked detail).",
+    "2/5 Categories flagged: hardcoded secret-shaped assignment, sudo invocation (category-level only; no file/line detail shared).",
+    "3/5 Card: https://drift.aryaman.tech/cards/anthropics-skills.html",
+    "4/5 This recurs the moment anyone edits a copy again — a scan finds it, only a governed source stops it from coming back.",
+    "5/5 Disclosure: this reply is a candidate exercise for Atlan, not an Atlan product — methodology in the card."
+  ]
+}

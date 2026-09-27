@@ -1,0 +1,22 @@
+{
+  "runId": "2026-09-19",
+  "reposScanned": 7,
+  "reposSkipped": 1,
+  "totalSkillsScanned": 214,
+  "byRepo": [
+    { "slug": "anthropics/skills", "skillsScanned": 38, "drifted": 0, "unowned": 12, "unversioned": 4, "securityFlagged": 3 },
+    { "slug": "hesreallyhim/awesome-claude-code", "skillsScanned": 61, "drifted": 2, "unowned": 20, "unversioned": 9, "securityFlagged": 5 }
+  ],
+  "drift": [
+    { "name": "pdf-gen", "repos": ["anthropics/skills", "hesreallyhim/awesome-claude-code"], "severity": "medium" }
+  ],
+  "duplication": [
+    { "name": "pdf-gen", "repos": ["anthropics/skills", "hesreallyhim/awesome-claude-code"], "versionCount": 2 },
+    { "name": "changelog-writer", "repos": ["anthropics/skills", "ComposioHQ/awesome-claude-skills"], "versionCount": 3 }
+  ],
+  "securityCategorySummary": [
+    { "patternId": "curl-pipe-bash", "label": "curl/wget | bash pipe", "count": 6 },
+    { "patternId": "aws-access-key", "label": "hardcoded credential pattern", "count": 2 }
+  ],
+  "ungovernedSkillPercentage": 41
+}

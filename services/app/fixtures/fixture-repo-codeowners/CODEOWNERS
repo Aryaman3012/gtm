@@ -1,0 +1,5 @@
+# Test fixture CODEOWNERS — maps the drifted pdf-gen skill (in both scanned
+# roots) to a single team so pr-creator's CODEOWNERS resolution has something
+# deterministic to match.
+.claude/skills/pdf-gen/ @platform-team
+.codex/pdf-gen/ @platform-team

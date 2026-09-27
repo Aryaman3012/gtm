@@ -1,0 +1,13 @@
+{
+  "runId": "2026-09-19",
+  "generatedAt": "2026-09-19T03:00:00.000Z",
+  "reposScanned": 2,
+  "reposSkipped": 0,
+  "totalSkillsScanned": 50,
+  "byRepo": [
+    { "slug": "org-a/repo-a", "skillsScanned": 30, "drifted": 1, "unowned": 5, "unversioned": 6, "securityFlagged": 1, "ungovernedSkillPercentage": 30 },
+    { "slug": "org-b/repo-b", "skillsScanned": 20, "drifted": 0, "unowned": 2, "unversioned": 2, "securityFlagged": 0, "ungovernedSkillPercentage": 20 }
+  ],
+  "securityCategorySummary": [{ "label": "curl/wget | bash pipe", "count": 1 }],
+  "ungovernedSkillPercentage": 26
+}

@@ -1,0 +1,29 @@
+# nginx server-block TEMPLATE for the skillsdrift GitHub App webhook service.
+#
+# This is a plain-text template, NOT installed under /etc/nginx/ by any
+# script in this build. Aryaman copies this to
+#   /etc/nginx/sites-available/app.aryaman.tech
+# edits the placeholders below, symlinks it into sites-enabled, tests, and
+# reloads nginx by hand:
+#
+#   sudo cp build/app/nginx-site.conf.example /etc/nginx/sites-available/app.aryaman.tech
+#   sudo ln -s /etc/nginx/sites-available/app.aryaman.tech /etc/nginx/sites-enabled/
+#   sudo nginx -t
+#   sudo systemctl reload nginx
+#
+# TLS (certbot or similar) is assumed to be layered on top separately, same
+# pattern as this VPS's other static-site subdomains.
+
+server {
+    listen 80;
+    server_name app.aryaman.tech;
+
+    location / {
+        proxy_pass http://127.0.0.1:8797;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

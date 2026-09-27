@@ -5,3 +5,7 @@ __pycache__/
 
 # waitlist signups are personal data — never commit them
 waitlist/signups.jsonl
+# service working data — regenerated, and card/draft output is per-run
+services/scanner/.cache/
+services/scanner/out/
+services/scanner/data/findings/
