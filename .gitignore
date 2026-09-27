@@ -9,3 +9,4 @@ waitlist/signups.jsonl
 services/scanner/.cache/
 services/scanner/out/
 services/scanner/data/findings/
+.preview/

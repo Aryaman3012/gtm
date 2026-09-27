@@ -95,49 +95,81 @@ const PAGE = `<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>skillsdrift — Registry pilot waitlist</title>
 <style>
+  /* Same system as the State of Skill Drift index: cool grey-green paper,
+     green-black ink, teal for the canonical/affirmative. No webfonts, no
+     third-party requests — the page promises that below, so it has to keep it. */
   :root {
-    --bg: #fbfaf8; --fg: #1b1a17; --muted: #6b6862; --line: #e2ded6;
-    --accent: #7c3a1d; --ok: #1f6b3a; --err: #9b2c17; --field: #fff;
+    --paper: #e8eae5; --raised: #f2f3f0; --ink: #171b18; --muted: #5e665f;
+    --rule: #ccd1cb; --keep: #0e6e6e; --err: #8a3a62; --field: #fff;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #171614; --fg: #ece9e3; --muted: #9a958c; --line: #302d28;
-      --accent: #d98c5f; --ok: #6cc08a; --err: #e0846a; --field: #201e1b;
+    :root {
+      --paper: #12150f; --raised: #1b1f19; --ink: #e6e9e0; --muted: #939c92;
+      --rule: #2e332c; --keep: #5cb8b2; --err: #dd92b2; --field: #171b14;
     }
   }
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   body {
-    margin: 0; background: var(--bg); color: var(--fg);
-    font: 16px/1.55 ui-sans-serif, -apple-system, "Segoe UI", Inter, sans-serif;
-    display: flex; justify-content: center; padding: 3rem 1.25rem 5rem;
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 400 17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-synthesis: none;
   }
-  main { width: 100%; max-width: 32rem; }
-  h1 { font-size: 1.5rem; letter-spacing: -0.02em; margin: 0 0 .5rem; }
-  .lede { color: var(--muted); margin: 0 0 2rem; }
-  form { display: grid; gap: 1.1rem; }
-  label { display: grid; gap: .35rem; font-weight: 600; font-size: .875rem; }
+  code, .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; }
+  a { color: inherit; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--keep); outline-offset: 2px; }
+
+  .page { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem 5rem; }
+  .masthead {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem; flex-wrap: wrap; padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule); margin-bottom: 3.5rem;
+  }
+  .wordmark { font-weight: 600; letter-spacing: -0.01em; }
+  .masthead a { font-size: 0.875rem; color: var(--muted); }
+
+  main { max-width: 34rem; }
+  h1 {
+    font-size: clamp(1.7rem, 4.6vw, 2.5rem); line-height: 1.08;
+    letter-spacing: -0.03em; font-weight: 600; margin: 0 0 0.75rem; max-width: 18ch;
+  }
+  .lede { color: var(--muted); margin: 0 0 2.5rem; }
+
+  form { display: grid; gap: 1.25rem; }
+  label { display: grid; gap: .3rem; font-weight: 600; font-size: .9375rem; }
   .hint { font-weight: 400; color: var(--muted); font-size: .8125rem; }
   input {
-    font: inherit; padding: .6rem .7rem; border: 1px solid var(--line);
-    border-radius: 6px; background: var(--field); color: var(--fg);
+    font: inherit; padding: .6rem .7rem; border: 1px solid var(--rule);
+    border-radius: 3px; background: var(--field); color: var(--ink); width: 100%;
   }
-  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  input:focus-visible { border-color: var(--keep); }
   button {
-    font: inherit; font-weight: 600; padding: .65rem 1rem; border: 0;
-    border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer;
-    justify-self: start;
+    font: inherit; font-weight: 600; padding: .7rem 1.1rem; border: 0;
+    border-radius: 3px; background: var(--keep); color: var(--paper);
+    cursor: pointer; justify-self: start;
   }
-  button[disabled] { opacity: .6; cursor: default; }
-  .note { border-top: 1px solid var(--line); margin-top: 2.25rem; padding-top: 1rem;
-          color: var(--muted); font-size: .8125rem; }
-  .note ul { margin: .4rem 0 0; padding-left: 1.1rem; }
-  #msg { font-size: .9rem; }
-  #msg.ok  { color: var(--ok); }
+  button:hover { background: var(--ink); }
+  button[disabled] { opacity: .55; cursor: default; }
+  #msg { font-size: .9375rem; margin: 0; }
+  #msg.ok  { color: var(--keep); }
   #msg.err { color: var(--err); }
-  a { color: var(--accent); }
+
+  .note {
+    margin-top: 3rem; padding: 1.1rem 1.25rem;
+    border-left: 2px solid var(--keep); background: var(--raised);
+    color: var(--muted); font-size: .9375rem;
+  }
+  .note strong { color: var(--ink); }
+  .note ul { margin: .5rem 0 0; padding-left: 1.1rem; }
+  .note li { margin-bottom: .25rem; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
+<div class="page">
+  <header class="masthead">
+    <span class="wordmark">skillsdrift</span>
+    <a href="/">State of Skill Drift</a>
+  </header>
 <main>
   <h1>Registry pilot waitlist</h1>
   <p class="lede">

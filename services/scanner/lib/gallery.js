@@ -12,36 +12,76 @@ function escapeHtml(s) {
   }[c]));
 }
 
-// The "State of Skill Drift" living index: headline stats, one card per
-// scanned repo (linking to the card HTML already written under out/cards/),
-// a weekly-delta strip if a delta has been computed, and the same
-// disclosure/CTA every surface carries.
+/**
+ * The "State of Skill Drift" living index.
+ *
+ * Two framing rules this page must obey, both from the strategy doc:
+ *
+ *  1. §3.4 — the file-level "no owner" percentage measures a definition, not a
+ *     problem: public libraries keep ownership in git, not in frontmatter. It is
+ *     NOT the headline. Findings by category and maintenance are. The earlier
+ *     version of this page led with "100% ungoverned", which is the stat the
+ *     doc explicitly retracted.
+ *  2. Drift reads 0 across public repos because each one is a single source of
+ *     truth. That zero is a finding worth stating plainly, not a gap to hide —
+ *     drift is what happens *inside* a company, across repos and tools.
+ *
+ * No webfonts, no analytics, no third-party requests of any kind: every free
+ * surface in this project promises that, so the page has to keep the promise.
+ */
 function renderGallery(state, opts = {}) {
   const waitlistUrl = opts.waitlistUrl || process.env.SKILLSDRIFT_WAITLIST_URL || '__WAITLIST_URL__';
 
-  const rows = (state.byRepo || [])
+  const repos = state.byRepo || [];
+  const findings = state.securityCategorySummary || [];
+  const totalFindings = findings.reduce((n, f) => n + f.count, 0);
+  const totalDrifted = repos.reduce((n, r) => n + (r.drifted || 0), 0);
+  const maxFinding = findings.reduce((n, f) => Math.max(n, f.count), 0) || 1;
+
+  const runDate = state.runId || (state.generatedAt || '').slice(0, 10);
+
+  // Per-repo rows. Tabular data belongs in a table, not a grid of cards.
+  const repoRows = repos
+    .map((r) => {
+      const href = `cards/${escapeHtml(r.cardSlug || r.slug)}.html`;
+      return `        <tr>
+          <th scope="row"><a href="${href}">${escapeHtml(r.slug)}</a></th>
+          <td class="num">${r.skillsScanned}</td>
+          <td class="num">${r.drifted}</td>
+          <td class="num">${r.unowned}</td>
+          <td class="num">${r.securityFlagged ? `<span class="flag">${r.securityFlagged}</span>` : '0'}</td>
+        </tr>`;
+    })
+    .join('\n');
+
+  // Counts encoded as bar length as well as a figure — the bar is the fastest
+  // read, the figure is the precise one.
+  const findingRows = findings
     .map(
-      (r) => `    <a class="repo-card" href="cards/${escapeHtml(r.cardSlug || r.slug)}.html">
-      <h3>${escapeHtml(r.slug)}</h3>
-      <p>${r.ungovernedSkillPercentage}% ungoverned · ${r.skillsScanned} skill(s) · ${r.drifted} drifted</p>
-    </a>`
+      (f) => `        <li>
+          <span class="cat">${escapeHtml(f.label)}</span>
+          <span class="bar" style="--w:${Math.round((f.count / maxFinding) * 100)}%"></span>
+          <span class="count">${f.count}</span>
+        </li>`
     )
     .join('\n');
 
-  const securityRows = (state.securityCategorySummary || [])
-    .map((s) => `<li>${escapeHtml(s.label)}: ${s.count}</li>`)
-    .join('\n');
-
-  const skippedRows = (state.reposSkippedDetail || [])
-    .map((s) => `<li>${escapeHtml(s.slug)} — ${escapeHtml(s.reason)}</li>`)
-    .join('\n');
-  const skippedSection = skippedRows
-    ? `<h2>Skipped this run (${state.reposSkippedDetail.length})</h2>
-  <ul>${skippedRows}</ul>`
+  const skipped = state.reposSkippedDetail || [];
+  const skippedSection = skipped.length
+    ? `    <section class="block">
+      <h2>Not scanned this run</h2>
+      <p>Named so the sample is auditable — a repo absent from the table above is here, with the reason.</p>
+      <ul class="skipped">
+${skipped.map((s) => `        <li><span class="slug">${escapeHtml(s.slug)}</span> ${escapeHtml(s.reason)}</li>`).join('\n')}
+      </ul>
+    </section>`
     : '';
 
-  const deltaStrip = opts.delta
-    ? `<div class="delta-strip">This week: ${opts.delta.newlyDrifted} new drifted, ${opts.delta.newlyOrphaned} newly orphaned. Ungoverned-skill percentage moved ${opts.delta.uspDelta >= 0 ? '+' : ''}${opts.delta.uspDelta} point(s) to ${state.ungovernedSkillPercentage}%.</div>`
+  const deltaSection = opts.delta
+    ? `    <section class="block">
+      <h2>Change since last run</h2>
+      <p class="delta">${opts.delta.newlyDrifted} newly drifted, ${opts.delta.newlyOrphaned} newly orphaned.</p>
+    </section>`
     : '';
 
   return `<!doctype html>
@@ -50,48 +90,354 @@ function renderGallery(state, opts = {}) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>State of Skill Drift</title>
+<meta name="description" content="A weekly scan of public agent-skills repositories: security findings by category, ownership, and what public data cannot tell you about drift.">
 <style>
-  :root { color-scheme: light dark; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 2.5rem 1.5rem; background: #f6f7fb; color: #16181d; }
-  .wrap { max-width: 960px; margin: 0 auto; }
-  h1 { font-size: 2rem; margin-bottom: 0.25rem; }
-  .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1.5rem 0; }
-  .stat { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; min-width: 140px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-  .stat .n { font-size: 1.8rem; font-weight: 800; display: block; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-  .repo-card { background: #fff; border-radius: 12px; padding: 1rem 1.25rem; text-decoration: none; color: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: block; }
-  .repo-card h3 { margin: 0 0 0.4rem; font-size: 1rem; }
-  .repo-card p { margin: 0; font-size: 0.85rem; color: #5b6472; }
-  .delta-strip { background: #eef1f6; border-radius: 12px; padding: 1rem 1.25rem; margin: 1.5rem 0; font-size: 0.9rem; }
-  .disclosure { font-size: 0.8rem; color: #767f8c; margin-top: 2rem; }
-  .cta { display: inline-block; background: #16181d; color: #fff; text-decoration: none; padding: 0.65rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; margin-top: 0.5rem; }
+  /* ---- tokens -------------------------------------------------------- */
+  :root {
+    --paper: #e8eae5;
+    --raised: #f2f3f0;
+    --ink: #171b18;
+    --muted: #5e665f;
+    --rule: #ccd1cb;
+    --keep: #0e6e6e;   /* the canonical copy */
+    --drift: #8a3a62;  /* the copy that diverged */
+    --flag: #8a3a62;
+    --measure: 64ch;
+  }
   @media (prefers-color-scheme: dark) {
-    body { background: #0f1115; color: #e7e9ee; }
-    .stat, .repo-card { background: #181b21; box-shadow: none; }
-    .repo-card p { color: #9aa3b2; }
-    .delta-strip { background: #23262e; }
-    .cta { background: #e7e9ee; color: #0f1115; }
+    :root {
+      --paper: #12150f;
+      --raised: #1b1f19;
+      --ink: #e6e9e0;
+      --muted: #939c92;
+      --rule: #2e332c;
+      --keep: #5cb8b2;
+      --drift: #dd92b2;
+      --flag: #dd92b2;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-synthesis: none;
+  }
+  .mono, code, .num, .count, .slug, .ver {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  a { color: inherit; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: currentColor; }
+  :focus-visible { outline: 2px solid var(--keep); outline-offset: 2px; }
+
+  /* ---- shell --------------------------------------------------------- */
+  .page { max-width: 68rem; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+  .masthead {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 1rem; flex-wrap: wrap;
+    padding: 1.5rem 0; border-bottom: 1px solid var(--rule);
+  }
+  .wordmark { font-weight: 600; letter-spacing: -0.01em; }
+  .runmeta { color: var(--muted); font-size: 0.875rem; }
+
+  /* Two-column body: a metadata rail and the content measure. */
+  .cols { display: grid; gap: 2.5rem; grid-template-columns: minmax(0, 1fr); }
+  .rail, main { min-width: 0; }
+  /* Narrow screens lead with the headline; run metadata follows the content. */
+  main { order: 1; }
+  .rail { order: 2; padding-top: 1rem; border-top: 1px solid var(--rule); }
+  @media (min-width: 62rem) {
+    .cols { grid-template-columns: 13rem minmax(0, 1fr); gap: 4rem; }
+    .rail { order: 0; position: sticky; top: 2rem; align-self: start;
+            padding-top: 0; border-top: 0; }
+  }
+  .rail { font-size: 0.875rem; color: var(--muted); }
+  .rail dl { margin: 0; display: grid; gap: 0.9rem; }
+  .rail dt { color: var(--ink); font-weight: 600; font-size: 0.8125rem; }
+  .rail dd { margin: 0.1rem 0 0; }
+
+  /* ---- hero ---------------------------------------------------------- */
+  .hero { padding: 3.5rem 0 0; }
+  .hero h1 {
+    margin: 0 0 1rem;
+    font-size: clamp(1.9rem, 5.2vw, 3.1rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    max-width: 24ch;
+  }
+  .hero .standfirst { margin: 0 0 2.25rem; max-width: var(--measure); color: var(--muted); }
+
+  /* The diff is the one loud element on the page. */
+  .diff {
+    border: 1px solid var(--rule); background: var(--raised);
+    border-radius: 3px; overflow: hidden; margin: 0 0 1rem;
+  }
+  .diff-head {
+    display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    padding: 0.7rem 1rem; border-bottom: 1px solid var(--rule);
+    font-size: 0.8125rem; color: var(--muted);
+  }
+  .diff-body { margin: 0; padding: 0.9rem 0; overflow-x: auto; }
+  .diff-body .row {
+    display: grid; grid-template-columns: 3.5rem 1.6rem auto;
+    align-items: baseline; gap: 0.5rem;
+    padding: 0.16rem 1rem; white-space: pre; font-size: 0.9rem;
+    width: max-content; min-width: 100%;
+  }
+  .diff-body .ln { color: var(--muted); font-size: 0.78rem; text-align: right; }
+  .diff-body .sig { font-weight: 600; }
+  .row.keep .sig, .row.keep .txt { color: var(--keep); }
+  .row.drift .sig, .row.drift .txt { color: var(--drift); }
+  .row.ctx .txt { color: var(--muted); }
+  .diff-why {
+    margin: 0; padding: 0.85rem 1rem; border-top: 1px solid var(--rule);
+    font-size: 0.9375rem; color: var(--muted);
+  }
+  .diff-why strong { color: var(--ink); font-weight: 600; }
+  .fixture-note { margin: 0 0 3.5rem; font-size: 0.875rem; color: var(--muted); max-width: var(--measure); }
+
+  /* ---- blocks -------------------------------------------------------- */
+  .block { padding: 2.75rem 0 0; }
+  .block > h2 {
+    margin: 0 0 0.6rem; font-size: 1.0625rem; font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .block > p { margin: 0 0 1.4rem; max-width: var(--measure); color: var(--muted); }
+
+  .totals { display: flex; flex-wrap: wrap; gap: 0 2.5rem; margin: 0 0 1.75rem; padding: 0; list-style: none; }
+  .totals li { padding: 0.3rem 0; }
+  .totals .n { display: block; font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+  .totals .l { font-size: 0.8125rem; color: var(--muted); }
+
+  /* findings by category */
+  .cats { list-style: none; margin: 0; padding: 0; max-width: 44rem; }
+  .cats li {
+    display: grid; align-items: center; gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) 6rem 2.5rem;
+    padding: 0.5rem 0; border-bottom: 1px solid var(--rule);
+    font-size: 0.9375rem;
+  }
+  .cats .bar { height: 7px; background: var(--flag); width: var(--w); border-radius: 1px; opacity: 0.85; }
+  .cats .count { text-align: right; font-size: 0.9375rem; }
+  @media (max-width: 34rem) {
+    .cats li { grid-template-columns: minmax(0, 1fr) 2.5rem; }
+    .cats .bar { display: none; }
+  }
+
+  /* per-repo table */
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; }
+  caption { text-align: left; color: var(--muted); font-size: 0.875rem; padding-bottom: 0.6rem; }
+  th, td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--rule); text-align: left; }
+  thead th { font-size: 0.78rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  tbody th { font-weight: 400; }
+  .num { text-align: right; }
+  thead th.num { text-align: right; }
+  .flag { color: var(--flag); font-weight: 600; }
+
+  /* the honest note */
+  .note {
+    margin: 1.25rem 0 0; padding: 1.1rem 1.25rem;
+    border-left: 2px solid var(--keep); background: var(--raised);
+  }
+  .note p { margin: 0 0 0.7rem; max-width: var(--measure); }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* run it */
+  pre.cmd {
+    margin: 0 0 1rem; padding: 0.9rem 1rem; overflow-x: auto;
+    background: var(--raised); border: 1px solid var(--rule); border-radius: 3px;
+    font-size: 0.9rem; line-height: 1.7;
+  }
+  pre.cmd .p { color: var(--muted); }
+
+  .cta {
+    display: inline-block; margin-top: 0.5rem;
+    padding: 0.7rem 1.1rem; background: var(--keep); color: var(--paper);
+    text-decoration: none; font-weight: 600; font-size: 0.9375rem; border-radius: 3px;
+  }
+  .cta:hover { background: var(--ink); }
+
+  .foot {
+    margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--rule);
+    font-size: 0.8125rem; color: var(--muted); max-width: var(--measure);
+  }
+  .skipped { list-style: none; margin: 0; padding: 0; font-size: 0.9375rem; }
+  .skipped li { padding: 0.4rem 0; border-bottom: 1px solid var(--rule); color: var(--muted); }
+  .skipped .slug { color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>State of Skill Drift</h1>
-  <p>A living index of public agent-skills repos, rescanned weekly. Candidate-exercise disclosure below.</p>
-  <div class="stat-row">
-    <div class="stat"><span class="n">${state.ungovernedSkillPercentage}%</span>ungoverned across sample</div>
-    <div class="stat"><span class="n">${state.reposScanned}</span>repos scanned</div>
-    <div class="stat"><span class="n">${state.totalSkillsScanned}</span>skills scanned</div>
+<div class="page">
+
+  <header class="masthead">
+    <span class="wordmark">skillsdrift</span>
+    <span class="runmeta">Public scan, run <span class="mono">${escapeHtml(runDate)}</span></span>
+  </header>
+
+  <div class="cols">
+    <aside class="rail">
+      <dl>
+        <div>
+          <dt>Scope</dt>
+          <dd>${state.reposScanned} public repositories, ${state.totalSkillsScanned} skills</dd>
+        </div>
+        <div>
+          <dt>Cadence</dt>
+          <dd>Rescanned weekly</dd>
+        </div>
+        <div>
+          <dt>Attribution</dt>
+          <dd>Findings reported by category only, never tied to a named repository</dd>
+        </div>
+        <div>
+          <dt>Method</dt>
+          <dd>Read-only clone, static read of skill files. No execution.</dd>
+        </div>
+      </dl>
+    </aside>
+
+    <main>
+      <section class="hero">
+        <h1>Two copies of one skill, and they no longer agree</h1>
+        <p class="standfirst">
+          This is what drift looks like at the file level. The same skill, kept in two
+          repositories, quietly diverging until the people using it get different
+          results and nobody can say which copy is right.
+        </p>
+
+        <div class="diff">
+          <div class="diff-head">
+            <span class="mono">pdf-gen/SKILL.md</span>
+            <span><span class="ver" style="color:var(--keep)">repo-a</span> against <span class="ver" style="color:var(--drift)">repo-b</span></span>
+          </div>
+          <div class="diff-body">
+            <div class="row ctx"><span class="ln mono">3</span><span class="sig mono"> </span><span class="txt mono">description: Generates PDF reports from markdown input.</span></div>
+            <div class="row keep"><span class="ln mono">5</span><span class="sig mono">−</span><span class="txt mono">version: 1.0.0</span></div>
+            <div class="row drift"><span class="ln mono">5</span><span class="sig mono">+</span><span class="txt mono">version: 1.1.0</span></div>
+            <div class="row ctx"><span class="ln mono">17</span><span class="sig mono"> </span><span class="txt mono">Converts a markdown file into a formatted PDF report.</span></div>
+            <div class="row keep"><span class="ln mono">18</span><span class="sig mono">−</span><span class="txt mono">Uses a headless Chromium print-to-PDF call under the hood.</span></div>
+            <div class="row drift"><span class="ln mono">18</span><span class="sig mono">+</span><span class="txt mono">Uses wkhtmltopdf under the hood.</span></div>
+          </div>
+          <p class="diff-why">
+            <strong>Two different PDF engines.</strong> Anyone asking their assistant to
+            build a report gets different output depending on which copy their repository
+            happens to hold, and the version numbers give no hint which is current.
+          </p>
+        </div>
+        <p class="fixture-note">
+          Taken from the fixture pair the scanner ships with, so you can reproduce it:
+          <code>node skillsdrift.js fixtures/repo-a fixtures/repo-b</code>.
+        </p>
+      </section>
+
+      <section class="block">
+        <h2>This week's public scan</h2>
+        <p>
+          A weekly read of public agent-skills repositories. It measures what a public
+          repository can actually show: what is in the skill files, and what those files
+          ask a machine to do.
+        </p>
+        <ul class="totals">
+          <li><span class="n mono">${state.reposScanned}</span><span class="l">repositories</span></li>
+          <li><span class="n mono">${state.totalSkillsScanned}</span><span class="l">skills read</span></li>
+          <li><span class="n mono">${totalFindings}</span><span class="l">risky patterns, ${findings.length} categories</span></li>
+          <li><span class="n mono">${totalDrifted}</span><span class="l">drifted pairs</span></li>
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2>Risky patterns, by category</h2>
+        <p>
+          Counted across the whole sample and never attributed to a repository. These are
+          patterns worth a human look, not verdicts: a <code>sudo</code> line inside a
+          comment counts the same as a real one.
+        </p>
+        <ul class="cats">
+${findingRows || '        <li><span class="cat">Nothing found this run</span><span class="bar" style="--w:0"></span><span class="count">0</span></li>'}
+        </ul>
+      </section>
+
+      <section class="block">
+        <h2>By repository</h2>
+        <div class="tablewrap">
+          <table>
+            <caption>Follow a repository name for its full card.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Repository</th>
+                <th scope="col" class="num">Skills</th>
+                <th scope="col" class="num">Drifted</th>
+                <th scope="col" class="num">No owner field</th>
+                <th scope="col" class="num">Flagged</th>
+              </tr>
+            </thead>
+            <tbody>
+${repoRows}
+            </tbody>
+          </table>
+        </div>
+        <div class="note">
+          <p>
+            <strong>Read the last two columns carefully.</strong> A missing owner field
+            does not mean a skill is unowned. Public libraries record ownership in git
+            history and CODEOWNERS, not in skill frontmatter, so a high count here
+            measures a file convention rather than a governance failure. It is in the
+            table because it is what was found, not because it is the story.
+          </p>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>Why the drift column reads ${totalDrifted}</h2>
+        <div class="note">
+          <p>
+            Because a public repository is a single source of truth. One copy of a skill
+            cannot disagree with itself, so there is nothing for the scanner to find.
+          </p>
+          <p>
+            Drift happens where a skill gets copied: into a second repository, a second
+            AI tool, a teammate's local directory. That copying happens inside companies,
+            in private, and no public scan can see it. The diff at the top of this page is
+            the shape of what a scan of your own repositories finds and this one
+            structurally cannot.
+          </p>
+        </div>
+      </section>
+${deltaSection}
+${skippedSection}
+
+      <section class="block">
+        <h2>Run it on your own repositories</h2>
+        <p>
+          Reads your files and writes a report next to you. Nothing is uploaded, no account,
+          no network call.
+        </p>
+        <pre class="cmd mono"><span class="p">$</span> npx skillsdrift .claude/skills .codex</pre>
+        <p>
+          You get a report in three layers — your own drift, a team scorecard with the blast
+          radius, and one line for whoever asks what the AI spend is doing — plus a manifest
+          ready to import into a registry.
+        </p>
+        <a class="cta" href="${escapeHtml(waitlistUrl)}" rel="noopener">Join the Registry pilot waitlist</a>
+      </section>
+
+      <p class="foot">${DISCLOSURE} No analytics, no cookies, and no third-party requests on this page.</p>
+    </main>
   </div>
-  ${deltaStrip}
-  <div class="grid">
-${rows}
-  </div>
-  <h2>Security findings by category (category-level only, no repo attribution)</h2>
-  <ul>${securityRows || '<li>None found</li>'}</ul>
-  ${skippedSection}
-  <p class="disclosure">${DISCLOSURE}</p>
-  <p><a class="cta" href="${escapeHtml(waitlistUrl)}" rel="noopener">Join the Registry pilot waitlist</a></p>
 </div>
 </body>
 </html>
