@@ -426,7 +426,11 @@ ${skippedSection}
           Reads your files and writes a report next to you. Nothing is uploaded, no account,
           no network call.
         </p>
-        <pre class="cmd mono"><span class="p">$</span> npx skillsdrift .claude/skills .codex</pre>
+        <pre class="cmd mono"><span class="p">$</span> git clone https://github.com/Aryaman3012/gtm
+<span class="p">$</span> node gtm/cli/skillsdrift.js .claude/skills .codex</pre>
+        <p class="fixture-note" style="margin-bottom:1.4rem">
+          Not on npm yet, so this is a clone rather than an <code>npx</code> one-liner.
+        </p>
         <p>
           You get a report in three layers — your own drift, a team scorecard with the blast
           radius, and one line for whoever asks what the AI spend is doing — plus a manifest
