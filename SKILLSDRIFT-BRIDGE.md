@@ -43,7 +43,15 @@ python3 scripts/triage.py examples/sample-drift-report.md --format md
 Requires Python 3.8+ (tested on 3.9.6). To use the whole skill rather than just the
 triage step, install `dist/skillsdrift-bridge.skill` in Claude, or copy the folder to
 `~/.claude/skills/`, then ask Claude to share your drift report with the teams that
-depend on those skills.
+depend on those skills. The two commands above work from an installed copy too — the
+sample reports ship inside the package, so the demo runs with nothing else present.
+
+The package is built from source, never by hand:
+
+```bash
+./scripts/package-skill.sh          # rebuild dist/skillsdrift-bridge.skill
+./scripts/package-skill.sh --check  # fail if dist/ has drifted from skills/
+```
 
 ---
 
@@ -106,3 +114,7 @@ These are the parts I'd expect to be challenged on, so they're stated plainly ra
 | `references/message-templates.md` | Templates for teammates, owners and channels, plus wording rules |
 | `examples/sample-registry-manifest.json` | Atlan-registry-style manifest, for the demo above |
 | `examples/sample-drift-report.md` | Markdown drift report, exercising the other parser |
+
+Plus, at the repo root, [`scripts/package-skill.sh`](scripts/package-skill.sh) — builds
+`dist/skillsdrift-bridge.skill` from the source directory, and `--check` verifies the two
+haven't drifted apart.
