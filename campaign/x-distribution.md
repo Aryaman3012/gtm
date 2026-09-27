@@ -35,35 +35,67 @@ manual until X credentials exist. Nothing here is automatable today.
 
 ## Prong 1 — launch and repost
 
-The Day-0 post is `campaign/p1-data-drop.md`. This prong is about who repeats it.
+**First, a correction to the obvious version of this prong.** The tempting move
+is to list the big skills repos and call them repost targets. That conflates two
+different things: *relevance to the finding* and *incentive to amplify it*. For
+the most relevant account they run in opposite directions — the more the finding
+is about your list, the less you want to spread it.
 
-**The asset does the work.** The finding is unusual enough to travel on its own:
-a scan of 951 public skills that found 12 drifted pairs, *and* an author who
-nearly published the opposite result because his own harness was asking the
-wrong question. The self-correction is the shareable part. Lead with it.
+Asking honestly what each account gains:
 
-**Repost targets, ranked by fit rather than follower count.** Every one of these
-maintains a skills repo, so the finding is about their corner of the ecosystem.
+| Account | Reach | What reposting gets them | Verdict |
+|---|---|---|---|
+| **Composio** | 75.7k★ / [@composio](https://x.com/composio) | Amplification of a finding that their list carries 12 stale copies. Nothing. It is a self-inflicted wound | **Not a repost target** |
+| **Vercel** | 32.6k★ / [@vercel](https://x.com/vercel) | A corporate account boosting an unaffiliated candidate exercise carrying another company's hiring disclosure. Also `skills.sh` is theirs, and a drift audit reads as a gap in it | **Not a repost target** |
+| **Behi** | 10.2k★ / [@Behi_Sec](https://x.com/Behi_Sec) | Method content for a security audience — 11 blunt heuristics, category-only reporting. He shares methodology, not callouts | Plausible, on method |
+| **Jeff Allan** | 11.6k★ / [@j3ffallan](https://x.com/j3ffallan) | 67 skills to maintain; a drift check is useful to him personally | Plausible, if it finds something in his |
+| **Travis Van Nimwegen** | 15.2k★ / [@Travis_Engineer](https://x.com/Travis_Engineer) | Curator of a list unpushed since 28 Apr. The finding is adjacent to his own situation | Unlikely to amplify; worth the courtesy |
+| **Sleuth** | 305★ / [@sleuth_io](https://x.com/sleuth_io) | Genuine complementary interest — `sx` shares skills, this audits them | Willing, negligible reach |
 
-| Who | X handle | Repo | Stars | Why they'd repost |
-|---|---|---|---|---|
-| Composio | [@composio](https://x.com/composio) | ComposioHQ/awesome-claude-skills | 75,736 | The finding is about their list. **They see it before launch — see prong 2.** |
-| Vercel | [@vercel](https://x.com/vercel) | vercel-labs/skills | 32,613 | Runs skills.sh; drift is an argument for a registry, which is their product |
-| Travis Van Nimwegen | [@Travis_Engineer](https://x.com/Travis_Engineer) | travisvn/awesome-claude-skills | 15,189 | Curator. His own list has not been pushed since 28 Apr — five months |
-| Behi | [@Behi_Sec](https://x.com/Behi_Sec) | BehiSecc/awesome-claude-skills | 10,184 | Security-leaning curator; the 11 heuristics are his subject |
-| Jeff Allan | [@j3ffallan](https://x.com/j3ffallan) | Jeffallan/claude-skills | 11,648 | Ships 67 skills across 12 categories — a maintenance burden he feels |
-| Sleuth | [@sleuth_io](https://x.com/sleuth_io) | sleuth-io/sx | 305 | Built `sx` for adjacent pain; complementary, not competing |
+Corporate accounts do not repost individual unaffiliated tools, and none of
+these people owe you distribution. **Plan for zero reposts from this list and
+you will not be disappointed.**
 
-Anthropic and `hesreallyhim` (54,698 stars, pushed today) list no X handle on
-their profiles. `@AnthropicAI` exists but a company account will not amplify a
-candidate exercise that scans its repo, so do not plan around it.
+### So what actually carries the launch
 
-**Off-X, same prong.** Jesse Vincent is on Bluesky (`bsky.app/profile/s.ly`),
-Mastodon (`metasocial.com/@jesse`) and Threads (`threads.net/obrajesse`). One
-post on Bluesky costs almost nothing and reaches the person with the largest
-skill library in the ecosystem. Do it the same day.
+Three mechanisms, none of which depend on a curator choosing to help.
 
----
+**1. The post travels on its own merit.** The shareable object is not the scan,
+it is the self-correction: *"my scanner said zero drift and I believed it, and
+the zero was an artefact of how I asked."* That story is amplified by people who
+repost good debugging writeups — a different and much larger audience than
+skills curators, and one that owes nobody anything. Same for the second bug:
+a CLI silently truncating its own JSON into `jq`. Engineers repost
+"here is how I was wrong" far more readily than "here is my tool."
+
+**2. Engagement beats amplification.** The most valuable response from Composio
+is not a repost — it is a reply saying "thanks, syncing those now." A correction
+or confirmation from the maintainer of the list in question is what makes the
+finding credible to everyone reading. That is worth more than their followers,
+and it is a realistic ask where a repost is not. It also only happens if they
+heard it from you first, privately, which is why the outreach is blocking.
+
+**3. Clean results are the only genuinely repostable news.** Superpowers scanned
+completely clean — 15 skills, no drift, no duplicates, no security-pattern hits.
+Its maintainer has an actual reason to share that, because it makes him look
+good rather than careless. This is the one case where the incentive points the
+right way.
+
+Note what this implies: a public list of who is clean and who is not would give
+everyone that incentive — and `strategy/anti-fragmentation-gate.md` kills it
+outright: *"Badge / leaderboard — KILL the score. Only a 'governed by Registry'
+badge survives."* Telling a maintainer privately that their library is clean is
+fine and they may share it themselves. Publishing a league table is not, and the
+opt-in version of it is P3, which is Day 7–30, not Day 0.
+
+### What to actually do on Day 0
+
+- Post it yourself, on X and HN, and let the self-correction carry it.
+- Bluesky the same day, because that is where the largest library's maintainer
+  is (`bsky.app/profile/s.ly`) and it costs one post.
+- Reply to anyone who engages, fast, especially anyone disputing the method.
+- Do not tag the curators into the launch thread. They heard it privately;
+  tagging them publicly converts a courtesy into pressure.
 
 ## Prong 2 — get builders actually using it
 
