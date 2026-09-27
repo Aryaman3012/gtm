@@ -17,7 +17,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { execFileSync, spawnSync } = require('child_process');
 const { createNotice } = require('./pr-creator');
 
 const ARTIFACT_CLI = require('../lib/skillsdrift-path').cli();
@@ -64,20 +64,19 @@ function runScan(repoPath) {
     };
   }
 
-  let stdout;
-  try {
-    stdout = execFileSync('node', [ARTIFACT_CLI, ...existing, '--json'], { encoding: 'utf8' });
-  } catch (err) {
-    // skillsdrift exits 1 when findings are present — execFileSync throws in
-    // that case, but the JSON is still on stdout per the brief; capture it
-    // regardless of exit code. A genuine crash (no stdout) rethrows.
-    if (err.stdout) {
-      stdout = err.stdout.toString('utf8');
-    } else {
-      throw err;
-    }
+  // spawnSync rather than execFileSync: skillsdrift exits 1 whenever findings
+  // are present, which is the normal path here, and execFileSync truncates
+  // stdout on its error path irrespective of maxBuffer (~146KB in practice).
+  // A repo with enough findings would have silently produced unparseable JSON.
+  const res = spawnSync('node', [ARTIFACT_CLI, ...existing, '--json'], {
+    encoding: 'utf8',
+    maxBuffer: 256 * 1024 * 1024,
+  });
+  if (res.error) throw res.error;
+  if (!res.stdout) {
+    throw new Error(`skillsdrift produced no output (status ${res.status}): ${res.stderr || ''}`);
   }
-  return JSON.parse(stdout);
+  return JSON.parse(res.stdout);
 }
 
 function hasFindings(scan) {
