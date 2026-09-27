@@ -17,11 +17,25 @@ function renderTemplate(model) {
   const {
     org, uspPct, scorecard, securityCategories, scannedPathsLine,
     layerSummary, recurrenceClose, waitlistUrl, repoLink, disclosure,
+    showSecurity,
   } = model;
 
-  const securityLine = securityCategories.length
-    ? `${scorecard.securityFlagged} (${securityCategories.map((c) => escapeHtml(c.label)).join(', ')})`
-    : '0';
+  // Security is shown only on a card about the reader's own repository. On a
+  // third-party card the row is omitted entirely rather than rendered as "0",
+  // which would be a false statement about a real company.
+  const securityRow = showSecurity
+    ? `\n      <li>Security findings: ${
+        securityCategories.length
+          ? `${scorecard.securityFlagged} (${securityCategories.map((c) => escapeHtml(c.label)).join(', ')})`
+          : '0'
+      }</li>`
+    : '';
+
+  // The headline figure is withheld on third-party cards (see generate.js).
+  const uspHtml =
+    typeof uspPct === 'number'
+      ? `<p class="usp">${uspPct}%<span> ungoverned · ${escapeHtml(scannedPathsLine)}</span></p>`
+      : `<p class="usp">${scorecard.skillsScanned}<span> skill(s) read · ${escapeHtml(scannedPathsLine)}</span></p>`;
 
   const repoLinkHtml = repoLink
     ? `<p class="repo-link"><a href="${escapeHtml(repoLink)}" rel="noopener">View repo →</a></p>`
@@ -63,13 +77,12 @@ function renderTemplate(model) {
 <body>
   <div class="card">
     <p class="headline">${escapeHtml(org)}'s agent skills, audited</p>
-    <p class="usp">${uspPct}%<span> ungoverned · ${escapeHtml(scannedPathsLine)}</span></p>
+    ${uspHtml}
     <ul class="chips">
       <li>Skills scanned: ${scorecard.skillsScanned}</li>
       <li>Drift incidents: ${scorecard.driftedPairs}</li>
       <li>Unowned: ${scorecard.unowned}</li>
-      <li>Unversioned: ${scorecard.unversioned}</li>
-      <li>Security findings: ${securityLine}</li>
+      <li>Unversioned: ${scorecard.unversioned}</li>${securityRow}
     </ul>
     <ul class="layers">
       <li><strong>Engineer view:</strong> ${escapeHtml(layerSummary.engineer)}</li>

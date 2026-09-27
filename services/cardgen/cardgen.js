@@ -7,6 +7,7 @@ const { generateCard } = require('./lib/generate');
 const { slugify } = require('../scanner/lib/slug');
 
 const HELP = `cardgen.js <report.json> [--org "Acme"] [--slug foo] [--out dir] [--waitlist-url url]
+                             [--subject own|third-party]
 
 Generates a standalone, static HTML "report card" from a skillsdrift v2
 --json report (see artifact/src/report.js buildJsonReport). Zero deps,
@@ -23,6 +24,9 @@ function parseArgs(argv) {
     else if (a === '--slug') opts.slug = argv[++i];
     else if (a === '--out') opts.out = argv[++i];
     else if (a === '--waitlist-url') opts.waitlistUrl = argv[++i];
+    // 'own' shows every finding (it is the reader's own repo); the default
+    // 'third-party' withholds security and the ungoverned percentage.
+    else if (a === '--subject') opts.subject = argv[++i];
     else if (a === '--help' || a === '-h') opts.help = true;
     else positional.push(a);
   }
@@ -38,7 +42,7 @@ function main(argv) {
 
   const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
   const slug = opts.slug || `${slugify(opts.org || 'skillsdrift-card')}-${new Date().toISOString().slice(0, 10)}`;
-  const html = generateCard(report, { org: opts.org, waitlistUrl: opts.waitlistUrl });
+  const html = generateCard(report, { org: opts.org, waitlistUrl: opts.waitlistUrl, subject: opts.subject });
 
   const outDir = opts.out || '.';
   fs.mkdirSync(outDir, { recursive: true });

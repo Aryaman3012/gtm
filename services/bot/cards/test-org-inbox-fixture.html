@@ -34,17 +34,16 @@
 <body>
   <div class="card">
     <p class="headline">test-org/inbox-fixture's agent skills, audited</p>
-    <p class="usp">50%<span> ungoverned · 1 scanned path</span></p>
+    <p class="usp">8<span> skill(s) read · 1 scanned path</span></p>
     <ul class="chips">
       <li>Skills scanned: 8</li>
       <li>Drift incidents: 1</li>
       <li>Unowned: 1</li>
       <li>Unversioned: 1</li>
-      <li>Security findings: 2 (curl/wget | bash pipe, AWS access key ID (AKIA...), eval( call)</li>
     </ul>
     <ul class="layers">
       <li><strong>Engineer view:</strong> 1 drifted pair(s), 1 unowned, 1 unversioned skill(s) found this scan.</li>
-      <li><strong>Team view:</strong> 50% of scanned skills are ungoverned — no owner, no version, or a security-heuristic hit.</li>
+      <li><strong>Team view:</strong> 1 of 8 scanned skill(s) carry no owner field. Public libraries usually record ownership in git rather than in the skill file.</li>
       <li><strong>Leader view:</strong> A governance snapshot, not a grade — the number moves on its own unless something governs it.</li>
     </ul>
     <p class="close">This will drift again the moment a second person edits any of these skills. A scan finds it; only a governed source of truth prevents it.</p>

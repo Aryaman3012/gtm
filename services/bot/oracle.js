@@ -220,14 +220,7 @@ function buildHookAndChips(slug, scanJson) {
   if (top.kind === 'drift') {
     const d = top.entry;
     lines.push(`${d.name} drifted across 2 copies found in ${slug}'s public skill scan.`);
-    if ((scanJson.security || []).length > 0) {
-      const { labels, totalFindings } = securityCategoryChips(scanJson.security);
-      lines.push(
-        `Also flagged: ${totalFindings} security-pattern flag(s) (category-level: ${labels
-          .slice(0, 2)
-          .join(', ')}) — no repo-linked detail shared here.`
-      );
-    } else if ((scanJson.ownership || []).length > 0 || (scanJson.version || []).length > 0) {
+    if ((scanJson.ownership || []).length > 0 || (scanJson.version || []).length > 0) {
       lines.push(
         `${(scanJson.ownership || []).length} skill(s) with no named owner, ${
           (scanJson.version || []).length
@@ -235,13 +228,22 @@ function buildHookAndChips(slug, scanJson) {
       );
     }
   } else if (top.kind === 'security') {
-    const { labels, totalFindings } = securityCategoryChips(top.entry);
-    lines.push(
-      `Ran a skills scan on ${slug} — found ${totalFindings} security-pattern flag(s) (category-level, no repo-linked detail).`
-    );
-    lines.push(
-      `Categories flagged: ${labels.slice(0, 2).join(', ')} (category-level only; no file/line detail shared).`
-    );
+    // Security is the top finding, but a public reply may not tie a security
+    // count to a named repository (launch-distribution-ideas.md, P1 condition
+    // 2: "report drift/ownership stats only, not the 'malicious payload'
+    // security category, to avoid defamation-adjacent claims about real
+    // companies"). So the public line reports only what is publicly
+    // reportable, and says nothing — not even by implication — about security.
+    // The detail goes out by DM instead; see buildSecurityDm below.
+    const owners = (scanJson.ownership || []).length;
+    const versions = (scanJson.version || []).length;
+    if (owners > 0 || versions > 0) {
+      lines.push(
+        `${slug}'s public skill scan: ${owners} skill(s) with no named owner, ${versions} with no version marker.`
+      );
+    } else {
+      lines.push(`Scanned ${slug}'s public skills — no drift, ownership or version findings this pass.`);
+    }
   } else if (top.kind === 'ownership') {
     lines.push(
       `${slug}'s public skill scan found ${top.count} skill(s) with no named owner — no one to ask when it breaks.`
@@ -255,6 +257,29 @@ function buildHookAndChips(slug, scanJson) {
   }
 
   return lines.slice(0, 2);
+}
+
+/**
+ * buildSecurityDm(slug, scanJson) — the private half of a reply.
+ *
+ * Security findings never appear in a public post tied to a named repository.
+ * They are not dropped either: the person who asked gets them by DM, still at
+ * category level with no file, line or snippet, which is the same standard the
+ * public index applies to its aggregate counts.
+ *
+ * Returns null when there is nothing security-related to send, so the caller
+ * can tell "no DM needed" from "DM withheld".
+ */
+function buildSecurityDm(slug, scanJson) {
+  const entries = scanJson.security || [];
+  if (entries.length === 0) return null;
+  const { labels, totalFindings } = securityCategoryChips(entries);
+  return [
+    `Scan of ${slug} also matched ${totalFindings} security-pattern flag(s).`,
+    `Categories: ${labels.slice(0, 3).join(', ')}.`,
+    'Sending this privately rather than posting it: these are patterns worth a human look, not verdicts — a sudo line in a comment matches the same rule as a real one.',
+    'No file, line or snippet is recorded anywhere, and nothing about this is posted publicly.',
+  ].join(' ');
 }
 
 function sanitizeSlugForFilename(slug) {
@@ -322,27 +347,38 @@ function buildUsageHelpReply() {
  * resolveDelivery({ slug, requester }) — decide whether findings may be posted
  * publicly, or must go by DM.
  *
- * §3.4: "The X account replies with a private link, not a public verdict,
- * unless the person asking maintains the repo." A public post about someone
- * else's repository is a verdict delivered in front of an audience, and this
- * project's whole position is that a forwarded note is welcome where a
- * broadcast is not.
+ * Two documents pull in opposite directions and both are right about something:
  *
- * Public requires `requester.maintainerOf` to contain the slug — a list the
- * caller supplies only after verifying it. It is never inferred from the
- * handle, the display name, or anything the requester claims, because an X
- * handle proves nothing about a GitHub repository.
+ *   spec 01 §1 — "Every invocation is user-initiated and public — the asker's
+ *   own followers see the reply, which is the actual distribution mechanism."
+ *   §3.4 — "replies with a private link, not a public verdict, unless the
+ *   person asking maintains the repo."
+ *
+ * Making every reply a DM honours the second and destroys the first: nobody's
+ * followers see a DM, so the channel stops distributing anything.
+ *
+ * The line that satisfies both is not public-vs-private, it is WHICH FINDINGS.
+ * Drift, ownership and version counts on a public repository are already
+ * public — drift.aryaman.tech publishes them with the repo named — so a public
+ * reply carrying them reveals nothing new and is not a verdict. Security
+ * findings are the part the index deliberately reports unattributed, and P1's
+ * second condition forbids tying them to a named company. Those go by DM.
+ *
+ * So every scan produces both halves: a public reply that distributes, and a
+ * private note for anything that must not be said in front of an audience.
+ * This return value only says whether the asker is a verified maintainer,
+ * which is never inferred from a handle — an X handle proves nothing about a
+ * GitHub repository.
  */
 function resolveDelivery({ slug, requester = {} }) {
   const maintains =
     Array.isArray(requester.maintainerOf) &&
     requester.maintainerOf.some((s) => String(s).toLowerCase() === String(slug).toLowerCase());
-  return maintains ? 'public' : 'dm';
+  return maintains ? 'maintainer' : 'public';
 }
 
-// What the bot may say in public when the findings themselves are going by DM.
-// Deliberately carries no counts, no severities, no verdict — only that a reply
-// was sent. Anything more is the public verdict the policy forbids.
+// Retained for callers that still want a finding-free public line (for example
+// when a requester has asked for everything to be kept off their timeline).
 function buildPrivateAck(slug) {
   return `Scanned it — sending you the result by DM so the details stay with you. If you maintain ${slug} and would rather this were public, say so and I'll reply here instead.`;
 }
@@ -364,15 +400,17 @@ function handleMention(text, opts = {}) {
     return { status: 'usage-help', delivery: 'public', ...buildUsageHelpReply() };
   }
   const { slug } = parsed;
-  const delivery = resolveDelivery({ slug, requester: opts.requester });
-  const withDelivery = (reply) =>
-    delivery === 'dm'
-      ? { ...reply, delivery, publicAck: buildPrivateAck(slug) }
-      : { ...reply, delivery };
+  const askerRole = resolveDelivery({ slug, requester: opts.requester });
+  // The public half always goes out; the private half exists only when there
+  // is something that must not be said publicly.
+  const withDelivery = (reply, scanJson) => {
+    const dmText = scanJson ? buildSecurityDm(slug, scanJson) : null;
+    return { ...reply, delivery: 'public', askerRole, dmText: dmText || undefined };
+  };
   const scanResult = scanRepo(slug, opts);
 
   if (scanResult.status === 'repeat') {
-    return withDelivery({ status: 'repeat', slug, ...buildRepeatReply(slug, scanResult.draftSummary) });
+    return withDelivery({ status: 'repeat', slug, ...buildRepeatReply(slug, scanResult.draftSummary) }, null);
   }
   if (scanResult.status === 'clone-failed') {
     // "Couldn't scan that" names no findings, so it may go back in public.
@@ -389,10 +427,11 @@ function handleMention(text, opts = {}) {
   const cache = loadCache(cacheFile);
   cache[slug] = { lastScannedAt: new Date(now).toISOString(), draftSummary };
   saveCache(cacheFile, cache);
-  return withDelivery({ status: 'ok', slug, ...draftSummary });
+  return withDelivery({ status: 'ok', slug, ...draftSummary }, scanResult.scanJson);
 }
 
 module.exports = {
+  buildSecurityDm,
   resolveDelivery,
   buildPrivateAck,
   parseMentionText,

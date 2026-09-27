@@ -59,9 +59,12 @@ function draftScan(repoArg, opts = {}) {
     status: 'draft',
     approved: false,
     replyStatus: reply.status,
-    // §3.4 delivery policy, decided at scan time and carried to the send.
-    delivery: reply.delivery || 'dm',
-    publicAck: reply.publicAck,
+    // Both halves of the reply, decided at scan time (see oracle.resolveDelivery):
+    // tweets go out publicly; dmText exists only when the scan found something
+    // that must not be tied to a named repo in public.
+    delivery: reply.delivery || 'public',
+    askerRole: reply.askerRole,
+    dmText: reply.dmText,
     tweets: reply.tweets,
   };
   writeDraftFile(filePath, draft);
@@ -91,8 +94,9 @@ function processInbox(opts = {}) {
       status: 'draft',
       approved: false,
       replyStatus: reply.status,
-      delivery: reply.delivery || 'dm',
-      publicAck: reply.publicAck,
+      delivery: reply.delivery || 'public',
+      askerRole: reply.askerRole,
+      dmText: reply.dmText,
       // Who the DM goes to. Never guessed — it comes from the mention itself.
       dmRecipientId: mention.authorId || (mention.author && mention.author.id) || undefined,
       tweets: reply.tweets,
@@ -128,38 +132,46 @@ function postApproved(draftFilePath, opts = {}) {
     throw new Error(`Refusing to post: ${draftFilePath} has an empty tweets[] array.`);
   }
 
-  // §3.4 delivery gate. A draft with no delivery field predates this policy and
-  // is treated as private, because the failure that matters is a correct scan
-  // shown to the wrong audience. Going public is opt-in and must be explicit.
-  const delivery = draft.delivery || 'dm';
+  const delivery = draft.delivery || 'public';
   if (delivery !== 'public' && delivery !== 'dm') {
     throw new Error(`Refusing to post: unknown delivery "${delivery}" in ${draftFilePath}.`);
   }
 
+  // A draft may carry a private half (security detail, which is never tied to a
+  // named repo in public). It needs somewhere to go, so refuse rather than
+  // silently dropping it — and never fall back to posting it.
+  if (draft.dmText && !draft.dmRecipientId) {
+    throw new Error(
+      `Refusing to post: ${draftFilePath} carries dmText but no dmRecipientId. ` +
+        'Security findings are never posted publicly against a named repo, so there is ' +
+        'nowhere to send this half. Add the recipient id, or remove dmText to post the ' +
+        'public half alone.'
+    );
+  }
+
+  // Legacy drafts written under the DM-everything policy: honour them literally.
   if (delivery === 'dm') {
     if (!draft.dmRecipientId) {
       throw new Error(
-        `Refusing to post: ${draftFilePath} is delivery "dm" but has no dmRecipientId. ` +
-          'Findings about a repo the requester does not maintain are never posted publicly ' +
-          '(§3.4), so there is nowhere to send this. Add the recipient id, or set ' +
-          '"delivery": "public" if the requester has been verified as a maintainer.'
+        `Refusing to post: ${draftFilePath} is delivery "dm" but has no dmRecipientId.`
       );
     }
-    // Promise chaining rather than async/await: every refusal above must throw
-    // synchronously, before any provider or credential code is reached.
     return Promise.resolve(provider.sendDirectMessage(draft.dmRecipientId, tweets.join('\n\n'))).then(
       (dmResult) => {
-        // The only thing that may appear in public is the finding-free line.
         if (!draft.publicAck) return [dmResult];
         return Promise.resolve(provider.postTweet(draft.publicAck)).then((ack) => [dmResult, ack]);
       }
     );
   }
 
-  if (tweets.length === 1) {
-    return provider.postTweet(tweets[0]);
-  }
-  return provider.postThread(tweets);
+  // Public half first — this is the distribution mechanism (spec 01 §1).
+  const publicSend =
+    tweets.length === 1 ? provider.postTweet(tweets[0]) : provider.postThread(tweets);
+  if (!draft.dmText) return publicSend;
+
+  return Promise.resolve(publicSend).then((pub) =>
+    Promise.resolve(provider.sendDirectMessage(draft.dmRecipientId, draft.dmText)).then((dm) => [pub, dm])
+  );
 }
 
 function parseFlag(args, name) {

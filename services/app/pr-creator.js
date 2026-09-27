@@ -43,7 +43,10 @@ const WAITLIST_PLACEHOLDER = '__WAITLIST_URL__';
 // a spec-03 miss found during R16 verification (same root cause as the bot's).
 function generateCard(scan, slug) {
   fs.mkdirSync(CARDS_DIR, { recursive: true });
-  const html = renderCard(scan, { org: slug });
+  // subject: 'own' — this card goes to the repo that installed the app, about
+  // its own code, so it carries every finding including security. A card about
+  // someone else's repo withholds those (see cardgen/lib/generate.js).
+  const html = renderCard(scan, { org: slug, subject: 'own' });
   fs.writeFileSync(path.join(CARDS_DIR, `${slug}.html`), html, 'utf8');
   return `${CARD_BASE_URL}/${slug}.html`;
 }

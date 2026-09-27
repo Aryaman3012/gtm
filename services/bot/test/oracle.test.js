@@ -164,8 +164,31 @@ test('security-only fixture: security chip never combines repo name with a speci
       );
     }
   }
-  const joined = reply.tweets.join(' ');
-  assert.ok(joined.includes('category-level'), 'expected category-level framing for security finding');
+  // Stronger than the original assertion: security is not merely framed
+  // carefully in public, it is absent from public entirely. P1 condition 2
+  // forbids tying a security count to a named company, so the public half
+  // carries none and the category-level detail moves to the DM.
+  // Strip the slug first — this fixture is literally named "security-only-fixture",
+  // so a naive search matches the repo name rather than any claim about it.
+  const joined = reply.tweets
+    .join(' ')
+    .split('test-org/security-only-fixture').join('<slug>')
+    .split('test-org-security-only-fixture').join('<slug>');
+  assert.ok(
+    !/security|flag\(s\)|category-level/i.test(joined),
+    `public reply must not mention security at all: "${joined}"`
+  );
+  assert.ok(reply.dmText, 'the security detail must still be delivered, privately');
+  assert.ok(
+    reply.dmText.includes('category-level') || /Categories:/.test(reply.dmText),
+    'the DM carries the category-level framing'
+  );
+  // Category labels ("curl/wget | bash pipe") are exactly what the DM is for.
+  // What must never appear is anything that locates or reproduces the code:
+  // a path, a line number, or a captured snippet.
+  assert.ok(!/\/(Users|home|tmp)\//.test(reply.dmText), 'no filesystem path in the DM');
+  assert.ok(!/\.md:\d|line \d+|:\d+:\d+/.test(reply.dmText), 'no line reference in the DM');
+  assert.ok(!/AKIA|sk-[A-Za-z0-9]{8}|BEGIN [A-Z ]*PRIVATE KEY/.test(reply.dmText), 'no captured secret in the DM');
 });
 
 test('clone failure is handled gracefully (stubbed spawnSync, zero network)', () => {

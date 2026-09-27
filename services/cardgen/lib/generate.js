@@ -12,10 +12,16 @@ const RECURRENCE_CLOSE =
 const DEFAULT_ORG = 'A team';
 const DEFAULT_WAITLIST_URL = '__WAITLIST_URL__';
 
-function layerSummaryFor(scorecard, uspPct) {
+function layerSummaryFor(scorecard, uspPct, subject) {
   return {
     engineer: `${scorecard.driftedPairs} drifted pair(s), ${scorecard.unowned} unowned, ${scorecard.unversioned} unversioned skill(s) found this scan.`,
-    team: `${uspPct}% of scanned skills are ungoverned — no owner, no version, or a security-heuristic hit.`,
+    // The ungoverned percentage counts a security-heuristic hit, so quoting it
+    // on a third-party card re-attributes by arithmetic what the card declines
+    // to state outright.
+    team:
+      subject === 'own'
+        ? `${uspPct}% of scanned skills are ungoverned — no owner, no version, or a security-heuristic hit.`
+        : `${scorecard.unowned} of ${scorecard.skillsScanned} scanned skill(s) carry no owner field. Public libraries usually record ownership in git rather than in the skill file.`,
     leader: 'A governance snapshot, not a grade — the number moves on its own unless something governs it.',
   };
 }
@@ -23,8 +29,29 @@ function layerSummaryFor(scorecard, uspPct) {
 // report = a skillsdrift v2 `--json` report (artifact/src/report.js
 // buildJsonReport shape), produced either by running skillsdrift directly or
 // by build/scanner's scan-repo.js/scan-list.js, which call the same library
-// function. opts: { org, waitlistUrl, repoLink }.
+// function.
+//
+// opts: { org, waitlistUrl, repoLink, subject }
+//
+// `subject` is the distinction this card previously lacked, and it matters
+// legally, not just editorially:
+//
+//   'third-party' (default) — a card about someone else's public repository,
+//     published by us. Security findings are NOT shown. Naming a real company
+//     next to "reverse shell / raw socket redirect" is an accusation, and
+//     launch-distribution-ideas.md P1 condition 2 forbids exactly that:
+//     "report drift/ownership stats only, not the 'malicious payload'
+//     security category, to avoid defamation-adjacent claims about real
+//     companies." The ungoverned percentage is also withheld — §3.4 retracts
+//     it as a measure of a file convention rather than a problem.
+//
+//   'own' — a card about the reader's own repository (their own scan, or the
+//     GitHub App issue on a repo that installed it). They are entitled to
+//     every finding about their own code, so nothing is withheld.
+//
+// Defaulting to 'third-party' means a caller that forgets to say cannot leak.
 function generateCard(report, opts = {}) {
+  const subject = opts.subject === 'own' ? 'own' : 'third-party';
   const org = opts.org || DEFAULT_ORG;
   const waitlistUrl =
     opts.waitlistUrl || report.waitlistUrl || process.env.SKILLSDRIFT_WAITLIST_URL || DEFAULT_WAITLIST_URL;
@@ -39,11 +66,14 @@ function generateCard(report, opts = {}) {
 
   const model = {
     org,
-    uspPct,
+    subject,
+    // Withheld on a third-party card; see the note on generateCard.
+    uspPct: subject === 'own' ? uspPct : null,
     scorecard,
-    securityCategories: securityCategoryCounts(report.security),
+    securityCategories: subject === 'own' ? securityCategoryCounts(report.security) : [],
+    showSecurity: subject === 'own',
     scannedPathsLine: scannedPathsSummary(report.scannedPaths),
-    layerSummary: layerSummaryFor(scorecard, uspPct),
+    layerSummary: layerSummaryFor(scorecard, uspPct, subject),
     recurrenceClose: RECURRENCE_CLOSE,
     disclosure: DISCLOSURE,
     waitlistUrl,

@@ -21,7 +21,18 @@ node "$DIR/cardgen/cardgen.js" "$DIR/test/fixtures/sample-report.json" --org "Ac
 CARD="$TMP/cards/acme-test.html"
 [ -f "$CARD" ] || fail "expected card HTML to be written"
 grep -q "Acme Corp" "$CARD" || fail "expected org name in card"
-grep -Eq '[0-9]+%' "$CARD" || fail "expected a USP percentage in card"
+# Default (third-party) cards must NOT carry the ungoverned percentage or any
+# security row: naming a real company beside a security pattern is the
+# defamation-adjacent claim P1 condition 2 forbids, and §3.4 retracts the
+# percentage. An "own" card carries both, because it is the reader's own repo.
+grep -q 'skill(s) read' "$CARD" || fail "third-party card should lead with skills read, not a percentage"
+grep -Eq '[0-9]+% *<span> ungoverned' "$CARD" && fail "third-party card must not show the ungoverned percentage"
+grep -q 'Security findings' "$CARD" && fail "third-party card must not show a security row"
+
+CARD_OWN="$TMP/cards/acme-own.html"
+node "$DIR/cardgen/cardgen.js" "$DIR/test/fixtures/sample-report.json" --org "Acme Corp" --slug acme-own --out "$TMP/cards" --subject own >/dev/null
+grep -Eq '[0-9]+%' "$CARD_OWN" || fail "own card should show the USP percentage"
+grep -q 'Security findings' "$CARD_OWN" || fail "own card should show its security row"
 grep -q "candidate exercise for Atlan" "$CARD" || fail "expected disclosure"
 grep -q "__WAITLIST_URL__" "$CARD" || fail "expected waitlist placeholder"
 grep -q "drift again" "$CARD" || fail "expected recurrence-close language"
