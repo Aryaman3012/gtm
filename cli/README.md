@@ -217,9 +217,9 @@ Exit codes: `0` clean scan, `1` findings present, `2` usage error.
 
 ## Waitlist URL
 
-The report's CTA line uses the placeholder `__WAITLIST_URL__` by default.
-Set `SKILLSDRIFT_WAITLIST_URL` (or pass `--waitlist-url`) to override it
-before running the tool for a real launch.
+The report's CTA line points at <https://drift.aryaman.tech/waitlist> by default.
+Set `SKILLSDRIFT_WAITLIST_URL` (or pass `--waitlist-url`) to send it somewhere
+else — a self-hosted pilot page, or your own Atlan workspace.
 
 ## Who this is for
 

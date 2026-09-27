@@ -1,0 +1,34 @@
+[Unit]
+Description=skillsdrift pilot waitlist
+Documentation=https://github.com/Aryaman3012/gtm/tree/main/waitlist
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+Group=debian
+WorkingDirectory=/opt/skillsdrift-waitlist
+ExecStart=/usr/bin/node /opt/skillsdrift-waitlist/server.js
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=8802
+Environment=DATA_FILE=/var/lib/skillsdrift-waitlist/signups.jsonl
+Restart=on-failure
+RestartSec=3
+
+# The signups file is the only thing this service may write.
+StateDirectory=skillsdrift-waitlist
+ReadWritePaths=/var/lib/skillsdrift-waitlist
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+NoNewPrivileges=true
+RestrictAddressFamilies=AF_INET AF_INET6
+LockPersonality=true
+# No MemoryDenyWriteExecute: V8's JIT needs W+X pages and traps at isolate
+# init without them (SIGTRAP in v8::base::OS::SetPermissions).
+
+[Install]
+WantedBy=multi-user.target

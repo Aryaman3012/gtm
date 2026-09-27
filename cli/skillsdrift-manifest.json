@@ -1,16 +1,16 @@
 {
   "schema": "atlan-registry-import/1",
-  "generated_at": "2026-09-26T07:31:10.839Z",
+  "generated_at": "2026-09-27T16:41:16.006Z",
   "paths_scanned": [
-    "fixtures/repo-a/.claude/skills",
-    "fixtures/repo-b/.claude/skills"
+    "fixtures/repo-a",
+    "fixtures/repo-b"
   ],
   "skills": [
     {
       "name": "changelog-writer",
       "paths": [
-        "fixtures/repo-a/.claude/skills",
-        "fixtures/repo-b/.claude/skills"
+        "fixtures/repo-a",
+        "fixtures/repo-b"
       ],
       "duplicate_group": 0,
       "content_hash": "6655960400573b1553fd8828f0c344adc203ef2da756801005d0f7251d91517a",
@@ -24,7 +24,7 @@
     {
       "name": "installer-helper",
       "paths": [
-        "fixtures/repo-a/.claude/skills"
+        "fixtures/repo-a"
       ],
       "duplicate_group": null,
       "content_hash": "661065a04ea947bd13baeec5eaf7388f1cbd4dd8223898517f0843142c30f307",
@@ -40,7 +40,7 @@
     {
       "name": "no-owner-skill",
       "paths": [
-        "fixtures/repo-a/.claude/skills"
+        "fixtures/repo-a"
       ],
       "duplicate_group": null,
       "content_hash": "3e2b4393cba6e9e19e8628d4dcf54c30ec8de1300edfef792afa9c61e2f2a309",
@@ -54,7 +54,7 @@
     {
       "name": "pdf-gen",
       "paths": [
-        "fixtures/repo-a/.claude/skills"
+        "fixtures/repo-a"
       ],
       "duplicate_group": 1,
       "content_hash": "272a13bfe686a4647e887f1ec9b5fcfd43c2064af8334ae10014af6d6232a8ae",
@@ -68,7 +68,7 @@
     {
       "name": "pdf-gen",
       "paths": [
-        "fixtures/repo-b/.claude/skills"
+        "fixtures/repo-b"
       ],
       "duplicate_group": 1,
       "content_hash": "38acc252c8e6da56f57406619d802fc3214c7e2a1fd5e216b810e5771d9b7ad5",
@@ -82,7 +82,7 @@
     {
       "name": "legacy-webhook",
       "paths": [
-        "fixtures/repo-b/.claude/skills"
+        "fixtures/repo-b"
       ],
       "duplicate_group": null,
       "content_hash": "9dbc5b9ff5c76bc8db2e0ecbeda29ebbe896c941acce4eb19f6473b6f4972636",
@@ -99,7 +99,7 @@
     {
       "name": "no-version-skill",
       "paths": [
-        "fixtures/repo-b/.claude/skills"
+        "fixtures/repo-b"
       ],
       "duplicate_group": null,
       "content_hash": "21de77a837e6ab577dc9dc6eb87564cf2809d5d0776e34735ffac48548c997f1",
@@ -115,18 +115,18 @@
     {
       "id": 0,
       "members": [
-        "fixtures/repo-a/.claude/skills/changelog-writer",
-        "fixtures/repo-b/.claude/skills/changelog-writer"
+        "fixtures/repo-a/changelog-writer",
+        "fixtures/repo-b/changelog-writer"
       ],
-      "suggested_canonical": "fixtures/repo-a/.claude/skills/changelog-writer"
+      "suggested_canonical": "fixtures/repo-a/changelog-writer"
     },
     {
       "id": 1,
       "members": [
-        "fixtures/repo-a/.claude/skills/pdf-gen",
-        "fixtures/repo-b/.claude/skills/pdf-gen"
+        "fixtures/repo-a/pdf-gen",
+        "fixtures/repo-b/pdf-gen"
       ],
-      "suggested_canonical": "fixtures/repo-b/.claude/skills/pdf-gen"
+      "suggested_canonical": "fixtures/repo-b/pdf-gen"
     }
   ]
 }

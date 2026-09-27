@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .DS_Store
 .skillsdrift/
+
+# waitlist signups are personal data — never commit them
+waitlist/signups.jsonl

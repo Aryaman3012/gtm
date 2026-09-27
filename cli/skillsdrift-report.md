@@ -1,7 +1,7 @@
 # skillsdrift report
 
-Generated: 2026-09-26T07:31:10.837Z
-Scanned paths: `fixtures/repo-a/.claude/skills`, `fixtures/repo-b/.claude/skills`
+Generated: 2026-09-27T16:41:15.995Z
+Scanned paths: `fixtures/repo-a`, `fixtures/repo-b`
 
 ---
 
@@ -23,8 +23,8 @@ _Per-skill findings: drift, ownership, versioning, security. First-person-useful
 
 #### `pdf-gen` drifted — [severity: medium]
 
-- Copy A: `fixtures/repo-a/.claude/skills/pdf-gen`
-- Copy B: `fixtures/repo-b/.claude/skills/pdf-gen`
+- Copy A: `fixtures/repo-a/pdf-gen`
+- Copy B: `fixtures/repo-b/pdf-gen`
 
 - `SKILL.md` changed:
   - line 5: `- version: 1.0.0`
@@ -34,22 +34,22 @@ _Per-skill findings: drift, ownership, versioning, security. First-person-useful
 
 ### Ownership
 
-- no-owner-skill (fixtures/repo-a/.claude/skills/no-owner-skill) — no owner marker found [severity: low]
+- no-owner-skill (fixtures/repo-a/no-owner-skill) — no owner marker found [severity: low]
 
 ### Version
 
-- no-version-skill (fixtures/repo-b/.claude/skills/no-version-skill) — no version marker found [severity: low]
+- no-version-skill (fixtures/repo-b/no-version-skill) — no version marker found [severity: low]
 
 ### Security
 
 _Informed by Snyk's ToxicSkills research: 36.82% of scanned public skills (1,467) had at least one security flaw, including 76 malicious credential-theft payloads. Agent skills are a software supply chain — treat them like one._
 
-#### installer-helper (fixtures/repo-a/.claude/skills/installer-helper)
+#### installer-helper (fixtures/repo-a/installer-helper)
 
 - **curl/wget | bash pipe** [severity: high] — `SKILL.md:15`: `curl -fsSL https://example.com/install.sh | bash`
   - Why this matters: Piping a remote download straight into a shell executes unreviewed third-party code at run time.
 
-#### legacy-webhook (fixtures/repo-b/.claude/skills/legacy-webhook)
+#### legacy-webhook (fixtures/repo-b/legacy-webhook)
 
 - **AWS access key ID (AKIA...)** [severity: high] — `SKILL.md:15`: `aws_access_key_id = AKIAABCDEFGHIJKLMNOP`
   - Why this matters: Matches the AWS access key ID format — a hardcoded cloud credential.
@@ -101,4 +101,4 @@ _Your team's skills, audited across 2 scanned path(s) — the diligence a champi
 
 Import this inventory into the governed registry pilot — `skillsdrift-manifest.json` is ready.
 
-Want drift, ownership, and security checks like this running automatically across your whole team, not just this one snapshot? Join the Registry pilot waitlist: __WAITLIST_URL__
+Want drift, ownership, and security checks like this running automatically across your whole team, not just this one snapshot? Join the Registry pilot waitlist: https://drift.aryaman.tech/waitlist

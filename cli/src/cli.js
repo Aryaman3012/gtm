@@ -7,7 +7,7 @@ const { buildResults, hasFindings, buildJsonReport, buildMarkdownReport } = requ
 const { buildManifest } = require('./manifest');
 const pkg = require('../package.json');
 
-const DEFAULT_WAITLIST_URL = '__WAITLIST_URL__';
+const DEFAULT_WAITLIST_URL = 'https://drift.aryaman.tech/waitlist';
 const CHECKIN_REPORT_FILENAME = '.skillsdrift-report.md';
 
 const HELP = `skillsdrift v${pkg.version}
@@ -41,7 +41,7 @@ Options:
                         diffs are meaningful run-to-run, and print the
                         command to commit it. Not combinable with --json.
   --waitlist-url <url>  Override the CTA URL in the report. Defaults to
-                        $SKILLSDRIFT_WAITLIST_URL, or the placeholder
+                        $SKILLSDRIFT_WAITLIST_URL, or
                         "${DEFAULT_WAITLIST_URL}" if unset.
   -v, --version         Print the version.
   -h, --help            Show this help.
