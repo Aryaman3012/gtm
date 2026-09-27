@@ -10,3 +10,6 @@ services/scanner/.cache/
 services/scanner/out/
 services/scanner/data/findings/
 .preview/
+
+# app test-run state: rewritten on every run (timestamps + absolute local paths)
+services/app/data/
