@@ -76,6 +76,61 @@ ${skipped.map((s) => `        <li><span class="slug">${escapeHtml(s.slug)}</span
     </section>`
     : '';
 
+  // Cross-repository drift: the same skill in two repos with different
+  // contents. scan-list.js scans each repo alone and so reports zero here by
+  // construction — this comes from cross-repo-drift.js, which runs the engine
+  // over every clone in one pass. Until that existed the index claimed public
+  // drift did not exist, which was an artefact of the harness.
+  const cross = opts.crossRepo;
+  const crossRows = cross
+    ? (cross.pairs || [])
+        .slice()
+        .sort((a, b) => b.filesChanged - a.filesChanged)
+        .map(
+          (p) => `        <tr>
+          <th scope="row">${escapeHtml(p.skill)}</th>
+          <td class="num">${p.filesChanged}</td>
+        </tr>`
+        )
+        .join('\n')
+    : '';
+
+  const crossRepoSection = cross
+    ? `    <section class="block">
+      <h2>The same skill, in two repositories, no longer matching</h2>
+      <p>
+        ${cross.driftedPairs} of the ${cross.skillsScanned} skills scanned exist in more than one
+        of these repositories with contents that have diverged. Every one is the same shape: an
+        official skill copied into a community collection, which then stood still while the
+        original kept moving.
+      </p>
+      <div class="tablewrap">
+        <table>
+          <caption>Files that differ between the two copies of each skill.</caption>
+          <thead>
+            <tr><th scope="col">Skill</th><th scope="col" class="num">Files differing</th></tr>
+          </thead>
+          <tbody>
+${crossRows}
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <p>
+          <strong>Nobody did anything wrong here.</strong> Vendoring a snapshot of a good skill
+          library is a reasonable thing to do, and keeping 800-odd skills in step with their
+          upstreams by hand is not. Drift is not a failure of care; it is what a copy does when
+          nothing connects it back to its source.
+        </p>
+        <p>
+          It is also why this page took months to say so. The scan ran on each repository in turn,
+          and a skill cannot drift against itself — so the number here read zero, and the zero was
+          read as a finding. It was a property of how the question was asked.
+        </p>
+      </div>
+    </section>`
+    : '';
+
   const deltaSection = opts.delta
     ? `    <section class="block">
       <h2>Change since last run</h2>
@@ -313,9 +368,10 @@ ${skipped.map((s) => `        <li><span class="slug">${escapeHtml(s.slug)}</span
       <section class="hero">
         <h1>Two copies of one skill, and they no longer agree</h1>
         <p class="standfirst">
-          This is what drift looks like at the file level. The same skill, kept in two
-          repositories, quietly diverging until the people using it get different
-          results and nobody can say which copy is right.
+          This is what drift looks like at the file level: the same skill, kept in two
+          repositories, quietly diverging until the people using it get different results
+          and nobody can say which copy is right. It is not hypothetical — this week's scan
+          found it ${cross ? cross.driftedPairs : 0} times across public repositories, below.
         </p>
 
         <div class="diff">
@@ -354,7 +410,7 @@ ${skipped.map((s) => `        <li><span class="slug">${escapeHtml(s.slug)}</span
           <li><span class="n mono">${state.reposScanned}</span><span class="l">repositories</span></li>
           <li><span class="n mono">${state.totalSkillsScanned}</span><span class="l">skills read</span></li>
           <li><span class="n mono">${totalFindings}</span><span class="l">risky patterns, ${findings.length} categories</span></li>
-          <li><span class="n mono">${totalDrifted}</span><span class="l">drifted pairs</span></li>
+          <li><span class="n mono">${cross ? cross.driftedPairs : totalDrifted}</span><span class="l">drifted pairs across repos</span></li>
         </ul>
       </section>
 
@@ -403,22 +459,7 @@ ${repoRows}
         </div>
       </section>
 
-      <section class="block">
-        <h2>Why the drift column reads ${totalDrifted}</h2>
-        <div class="note">
-          <p>
-            Because a public repository is a single source of truth. One copy of a skill
-            cannot disagree with itself, so there is nothing for the scanner to find.
-          </p>
-          <p>
-            Drift happens where a skill gets copied: into a second repository, a second
-            AI tool, a teammate's local directory. That copying happens inside companies,
-            in private, and no public scan can see it. The diff at the top of this page is
-            the shape of what a scan of your own repositories finds and this one
-            structurally cannot.
-          </p>
-        </div>
-      </section>
+${crossRepoSection}
 ${deltaSection}
 ${skippedSection}
 

@@ -38,7 +38,18 @@ test('broadcast thread draft structure: hook + finding tweets + disclosure + gal
 
   // The thread must say why a public null matters, or the CTA has no argument
   // behind it.
-  assert.ok(/second copy/.test(joined), 'thread must explain where drift actually starts');
+  assert.ok(
+    /linking it back to its source|second copy/.test(joined),
+    'thread must explain the mechanism, not just report counts'
+  );
+
+  // The hook must never claim "no drift" off the per-repo figure: that number
+  // is zero by construction for a single-source public repo, and reading it as
+  // a finding nearly went out as a launch headline.
+  assert.ok(
+    !/Found none|no drift(?!ed pairs this week)/i.test(thread.tweets[0]),
+    `hook must not claim an absence of drift from per-repo counts: "${thread.tweets[0]}"`
+  );
 
   // A CTA the reader can act on, and a link that is not a 403 directory index.
   assert.ok(/skillsdrift\.js/.test(joined), 'thread must carry a runnable command');

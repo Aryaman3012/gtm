@@ -1,10 +1,10 @@
 # P1 — the Day 0 data drop
 
-The launch event, ranked #1 in [`strategy/launch-distribution-ideas.md`](../docs/strategy/launch-distribution-ideas.md):
-the only idea that can produce a real spike without a third party's cooperation
-and without a structurally slow mechanism.
+The launch event, ranked #1 in `strategy/launch-distribution-ideas.md`: the only
+idea that can produce a real spike without a third party's cooperation and
+without a structurally slow mechanism.
 
-**Status: drafted, not posted.** Blocked on npm publish (see the checklist).
+**Status: drafted, not posted.** Two blockers, one of them new — see the bottom.
 
 ## The three conditions this post must meet
 
@@ -13,35 +13,55 @@ From P1's verdict, all mandatory:
 1. A visible "candidate exercise, unaffiliated with named companies or Atlan"
    disclosure **on the post itself**, not only on the linked page.
 2. **Drift and ownership stats only.** No security findings attributed to a
-   named company. Aggregate, unattributed category counts are the most that may
-   appear anywhere, and this post does not lead with them.
+   named company.
 3. Every named finding paired with a direct "run this on your own repos" CTA.
 
-One deliberate departure from P1 as written: its condition 3 says the CTA links
-to the CLI **and** the GitHub App. R10 supersedes that — see
-`strategy/two-hop-gtm.md` §A3: the wedge engineer usually cannot install an
-org-level GitHub App, so the App "is not the trigger for Hop 1, it's the result
-of a successful, permission-free Hop 1." **The CTA is the CLI only.** Pointing
-Day-0 traffic at an install most readers cannot perform would convert worse and
-contradict the sequencing gate in `services/app/register-runbook.md`.
+One deliberate departure: P1's condition 3 says the CTA links to the CLI **and**
+the GitHub App. R10 supersedes that — `strategy/two-hop-gtm.md` §A3: the wedge
+engineer usually cannot install an org-level GitHub App, so the App "is not the
+trigger for Hop 1, it's the result of a successful, permission-free Hop 1."
+**The CTA is the CLI only.**
 
-## The hook
+## The hook, and why it changed twice
 
-The earlier draft led with "951 public skills, 100% with no owner field." §3.4
-retracts that: it measures a file convention, because public libraries record
-ownership in git rather than in frontmatter. Leading with it invites the one
-reply that kills the thread — *"that's not what an owner field is for."*
+The first draft led with *"951 public skills, 100% with no owner field."* §3.4
+retracts that: it measures a file convention, since public libraries keep
+ownership in git rather than in frontmatter.
 
-The honest finding is stronger and it is the thesis:
+The second draft led with *"I scanned 951 skills for drift and found none — and
+that's the finding."* **That was wrong, and the post would have been
+embarrassing.** The scan ran on each repository in turn, and a skill cannot
+drift against itself, so a per-repo scan reports zero cross-repo drift by
+construction. The zero was a property of how the question was asked.
 
-> I scanned 951 public agent skills looking for drift. I found none. That is the finding.
+Running the same engine over every repository *at once* finds drift immediately.
+That is the hook, and it is better than either earlier version because it is a
+real result rather than an argument:
 
-A public repository is a single source of truth; one copy cannot disagree with
-itself. Drift is what happens when a skill is copied — into a second repo, a
-second AI tool, a teammate's local directory — and all of that happens inside
-companies, in private, where no public scan can see it. Which is precisely why
-the reader has to run it themselves. The CTA is the conclusion of the argument
-rather than an ask bolted onto the end.
+> Twelve skills exist in two public repositories with contents that no longer
+> match. Every one is an official skill copied into a community collection,
+> which then stood still while the original kept moving.
+
+The copies are two months behind — frozen at 2026-07-24 while the source moved
+on 2026-09-24 — and the largest divergences are substantial: 111 files differ in
+one skill, 108 in another, 53 in a third.
+
+## The framing rule this post follows
+
+`campaign/launch-checklist.md` rule 2 and §3.4 both say the same thing: the
+public data drop reports aggregates, named repos are scanned only when their
+owner asks, and nobody is shamed. So the post reports the **pattern and the
+counts**, and does not put a collection's name next to the word "stale."
+
+This is not squeamishness. Vendoring a snapshot of a good skill library is a
+reasonable thing to do, and keeping 800-odd skills in step with their upstreams
+by hand is not reasonable to expect. Drift is not a failure of care. Saying so
+plainly is both more accurate and more persuasive than a callout, and the people
+most likely to recognise themselves in it are exactly the audience.
+
+**The maintainers of the affected collection see this before it is posted.** See
+`campaign/n4-creator-outreach.md` — that outreach is now a prerequisite, not a
+courtesy.
 
 ---
 
@@ -50,7 +70,7 @@ rather than an ask bolted onto the end.
 **Title**
 
 ```
-Show HN: I scanned 951 public agent skills for drift and found none. Here's why that matters
+Show HN: 12 of the agent skills people install are already out of sync with their source
 ```
 
 **Body**
@@ -59,25 +79,41 @@ Show HN: I scanned 951 public agent skills for drift and found none. Here's why 
 I built a CLI that audits Claude Code / Codex agent-skill directories for
 drift: the same skill living in two places with contents that no longer match.
 
-Then I pointed it at 951 skills across four public repositories to see how
-common drift is in the wild. It found zero drifted pairs.
+Pointed at 951 skills across four public repositories, it finds 12 drifted
+pairs. Every one is the same shape — an official skill copied into a community
+collection, which then stood still while the original kept moving. The copies
+are about two months behind. In the worst cases the two versions differ by
+111, 108 and 53 files.
 
-That result is not a null. A public repo is one source of truth, so a skill
-there has nothing to disagree with. Drift starts at the moment of the second
-copy — a skill pasted into a second repository, a second assistant, someone's
-local directory — and that copying happens inside companies, in private. The
-public ecosystem is structurally incapable of showing the problem.
+I nearly published the opposite result. My first scan reported zero drift and I
+spent a while constructing an argument for why that was interesting — public
+repos are single sources of truth, drift only happens privately inside
+companies, and so on. It was wrong. The scanner was running on each repository
+in turn, and a skill cannot drift against itself, so a per-repo scan reports
+zero cross-repo drift by construction. Running the same engine over every repo
+at once found the drift immediately.
 
-What a public scan can show is what the files ask a machine to do, and how
-they're maintained. Both are on the index, reported by category across the
-whole sample and never tied to a named repository. I'm not interested in
-publishing a list of companies with findings next to their name.
+Two things I'd flag for anyone building something similar:
 
-The tool is local and read-only: it reads your files, writes a report next to
-you, and makes no network call. No account, no telemetry, nothing uploaded.
+- Scanning N repositories one at a time answers a different question from
+  scanning N repositories together, and the first one silently looks like good
+  news.
+- My CLI was truncating its own JSON when piped. process.exit() discards
+  buffered stdout because Node writes to pipes asynchronously — 146KB of a
+  1.4MB report, no error on either side. Writing to a file worked, which is why
+  it went unnoticed.
 
-The interesting case is two or more AI tools in the same company. One skill,
-two copies, two consoles, and each vendor's admin console can only see its own.
+I'm not naming the collection. Vendoring a snapshot is a reasonable thing to
+do, and hand-syncing 800-odd skills against their upstreams is not reasonable
+to expect. The maintainers have the detail. The point isn't that someone was
+careless — it's that a copy with nothing connecting it back to its source will
+drift, every time, and nobody finds out until the outputs disagree.
+
+The interesting case is inside a company allowing two or more AI tools: one
+skill, two copies, two admin consoles, each of which can only see its own.
+
+The tool is local and read-only: reads your files, writes a report next to you,
+no network call, no account, no telemetry.
 
 Index and method: https://drift.aryaman.tech
 Run it on your own repos:
@@ -88,103 +124,115 @@ Disclosure: this is a candidate exercise for Atlan's GTM challenge. It is not
 an Atlan product and is unaffiliated with any company named in the scan.
 ```
 
-**First comment from the author** (post immediately, per the checklist)
+**First comment from the author** (post immediately)
 
 ```
 Author here. What I'd most like feedback on:
 
-1. The 11 security heuristics are deliberately blunt — a `sudo` line inside a
-   comment matches the same rule as a real one. I'd rather over-flag and say so
-   than miss things quietly. If you think that trade is wrong, I want to hear it.
-
-2. The drift definition is "same skill name, different content hash, across two
+1. Drift is defined as "same skill name, different content hash, across two
    scanned roots." That misses a renamed copy, and I don't have a good answer
    for that yet.
 
-3. If you run it and it finds nothing, that's useful to me too — tell me how
-   many tools and repos you scanned.
+2. The 11 security heuristics are deliberately blunt — a `sudo` line in a
+   comment matches the same rule as a real one. I'd rather over-flag and say so.
+   Security findings are reported by category across the whole sample and never
+   tied to a named repo, which is a deliberate choice I'm happy to argue about.
 
-On the disclosure: I'm doing Atlan's GTM challenge, and this is the artifact.
+3. If you run it and it finds nothing, tell me — how many tools and repos did
+   you scan? A null from a single-repo, single-tool setup is expected and is
+   itself the point.
+
+On the disclosure: I'm doing Atlan's GTM challenge and this is the artifact.
 Atlan's Agent Registry is their unreleased product; none of this is theirs, and
 nobody at Atlan reviewed this post.
 ```
 
 ## X thread
 
-Keep each under 280. Thread, not a single post: the argument needs three beats.
-
 ```
-1/ I scanned 951 public agent skills looking for drift — the same skill in two
-   places, contents no longer matching.
+1/ I scanned 951 public agent skills for drift — the same skill in two places,
+   contents no longer matching.
 
-   Found zero.
+   12 drifted pairs. The copies are ~2 months behind their source.
 
-   That's the finding, not a failed experiment. 🧵
+   I also nearly published the exact opposite result. 🧵
 
-2/ A public repo is a single source of truth. One copy of a skill has nothing
-   to disagree with.
+2/ My first scan said zero drift. I started writing the clever explanation:
+   public repos are single sources of truth, drift only happens privately, etc.
 
-   Drift begins at the second copy: a second repo, a second assistant, someone's
-   laptop. All of that happens inside companies, in private.
+   It was wrong. The scanner ran on each repo in turn — and a skill can't drift
+   against itself.
 
-3/ So the public ecosystem structurally cannot show this problem. No scan of
-   GitHub will ever find it.
+3/ Scanning N repos one at a time answers a different question from scanning
+   them together. The first version silently looks like good news.
 
-   The only place it shows up is your own repos — which is the whole reason the
-   tool runs locally and uploads nothing.
+   Same engine, all repos at once: 12 pairs, immediately. Worst cases differ by
+   111, 108 and 53 files.
 
-4/ What a public scan CAN show: how these skills are maintained, and what they
-   ask a machine to do. Both on the index, by category across the sample, never
+4/ I'm not naming the collection. Vendoring a snapshot of a good library is
+   reasonable; hand-syncing 800 skills against upstream is not.
+
+   A copy with nothing linking it back to its source drifts. Every time. That's
+   the finding.
+
+5/ Method, counts and per-repo cards: https://drift.aryaman.tech
+
+   Security findings are reported by category across the whole sample and never
    tied to a named repo.
 
-   https://drift.aryaman.tech
-
-5/ Run it yourself. Local, read-only, no account, no network call:
+6/ Run it on your own repos — local, read-only, no account, no network call:
 
    git clone https://github.com/Aryaman3012/gtm
    node gtm/cli/skillsdrift.js .claude/skills .codex
 
    Most interesting if your company allows two or more AI tools.
 
-6/ Disclosure: this is a candidate exercise for Atlan's GTM challenge. Not an
-   Atlan product, unaffiliated with any company in the scan, and nobody at Atlan
-   reviewed it.
+7/ Disclosure: candidate exercise for Atlan's GTM challenge. Not an Atlan
+   product, unaffiliated with any company in the scan, nobody at Atlan reviewed
+   it.
 ```
 
 ## LinkedIn
 
-Different audience — the AI lead rather than the engineer. Same evidence, the
-organisational consequence foregrounded, no code block.
-
 ```
-I scanned 951 public agent skills looking for drift. I found none, and that
-turned out to be the useful result.
+I scanned 951 public agent skills looking for drift — the same skill in two
+places whose contents no longer match. I found twelve, and I very nearly
+published the opposite.
 
-A public repository is a single source of truth: one copy of a skill has
-nothing to disagree with. Drift starts at the second copy — a skill pasted into
-a second repository, a second AI assistant, someone's local directory. That
-copying happens inside companies, privately, where no public scan reaches.
+My first scan reported zero, and I spent a while building the explanation: a
+public repository is a single source of truth, so drift must be something that
+only happens privately inside companies. Wrong. The scan ran on each repository
+in turn, and a skill cannot drift against itself. The zero was a property of how
+I had asked the question. Run the same engine across every repository at once
+and the drift is immediate.
 
-Which is the part worth sitting with if you own AI tooling. Every major
-assistant now governs skills inside its own console: owners, versions,
-approvals. Real governance, and it stops at that vendor's edge. The moment a
-company allows a second tool, the same skill exists in two consoles and neither
-can see the other's copy. Nobody owns the gap, and nobody can answer "which
-version is correct" without opening both.
+What it found: twelve skills copied from an official library into a community
+collection, now roughly two months behind their source. The largest divergences
+run to 111, 108 and 53 files.
 
-That gap is invisible from outside and cheap to measure from inside. The tool
-is free, runs locally, uploads nothing, and takes about thirty seconds.
+Nobody was careless. Vendoring a snapshot of a good library is sensible, and
+keeping hundreds of skills in step with their upstreams by hand is not something
+you can reasonably ask of anyone. That is exactly the point. A copy with nothing
+connecting it back to its source drifts, and nobody finds out until two people
+get different answers from what they believe is the same skill.
 
+Which is worth sitting with if you own AI tooling. Every major assistant now
+governs skills inside its own console — owners, versions, approvals — and stops
+at that vendor's edge. The moment a company allows a second tool, the same skill
+exists in two consoles and neither can see the other's copy.
+
+Free, local, uploads nothing, about thirty seconds:
 https://drift.aryaman.tech
 
-Disclosure: this is a candidate exercise for Atlan's GTM challenge — not an
-Atlan product, and unaffiliated with any company named in the scan.
+Disclosure: a candidate exercise for Atlan's GTM challenge — not an Atlan
+product, unaffiliated with any company named in the scan.
 ```
 
 ## Before posting
 
-- [ ] npm publish, then replace the clone command with `npx skillsdrift` everywhere above
-- [ ] Re-run the scan so the numbers in the post match the live index that day
-- [ ] Confirm no card names a company beside a security finding (regression test: `cd services && bash run-tests.sh`)
-- [ ] Post Tue–Thu morning US time
-- [ ] Author's first comment goes up immediately, not later
+- [ ] **Send the N4 outreach first and give them time to reply.** Non-negotiable
+      now that the finding involves their repository
+- [ ] npm publish, then replace the clone command with `npx skillsdrift` everywhere
+- [ ] Re-run `scanner/cross-repo-drift.js` so the counts match the live index that day
+- [ ] Confirm no card names a company beside a security finding: `cd services && bash run-tests.sh`
+- [ ] Post Tue–Thu morning US time; author's first comment goes up immediately

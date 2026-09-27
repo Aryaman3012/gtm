@@ -37,19 +37,30 @@ function loadFindings(sourcePath) {
 function hookTweet(findings) {
   const reposScanned = findings.reposScanned ?? 0;
   const totalSkills = findings.totalSkillsScanned ?? 0;
-  const drifted = (findings.byRepo || []).reduce((n, r) => n + (r.drifted || 0), 0);
+  // byRepo.drifted counts drift WITHIN a repo, which is zero by construction
+  // for a single-source public repo. The number that matters is cross-repo
+  // drift, from scanner/cross-repo-drift.js. Prefer it when present, and never
+  // claim "no drift" off the per-repo figure alone — that mistake nearly went
+  // out as a launch headline.
+  const crossDrifted =
+    findings.crossRepoDriftedPairs ??
+    (findings.crossRepo && findings.crossRepo.driftedPairs) ??
+    null;
+  const withinDrifted = (findings.byRepo || []).reduce((n, r) => n + (r.drifted || 0), 0);
 
-  if (drifted === 0) {
-    return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week, looking for drift. Found none — and that is the finding. A public repo is one source of truth; it has nothing to disagree with.`;
+  if (crossDrifted === null) {
+    return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week. Cross-repo comparison did not run, so this week's drift count is incomplete.`;
   }
-  return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week. ${drifted} drifted pair(s): the same skill in two places, contents no longer matching.`;
+  if (crossDrifted === 0) {
+    return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week, comparing every repo against every other. No drifted pairs this week.`;
+  }
+  return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week. ${crossDrifted} drifted pair(s): the same skill in two repositories, contents no longer matching.`;
 }
 
-// Drift only begins at the second copy, which happens inside companies where no
-// public scan reaches. That is the argument for running it yourself, so it is
-// the tweet that precedes the CTA rather than a line buried mid-thread.
+// The mechanism behind the number, stated before the CTA so the ask has an
+// argument behind it rather than sitting at the end of a list of counts.
 function whyItMattersTweet() {
-  return 'Drift starts at the second copy — a second repo, a second assistant, someone\'s laptop. All of that happens inside companies, in private. No public scan can see it; only your own can.';
+  return 'A copy with nothing linking it back to its source drifts — every time, and nobody finds out until two people get different answers from the same skill name.';
 }
 
 // One aggregate line, not one tweet per category. Six near-identical tweets was
