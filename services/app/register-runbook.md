@@ -5,6 +5,27 @@ GitHub App, touches nginx, installs systemd units, or opens crontab entries
 for real — those actions are listed here as steps *you* (Aryaman) run by
 hand, when you decide to. Claude Code did not run any of them.
 
+## Resolved: this gate contradicts launch-distribution-ideas.md, and this gate wins
+
+`strategy/launch-distribution-ideas.md` ranks the App (P2) as the "Day 0-7
+primary conversion mechanism", live on Day 0 as the data drop's CTA
+destination. That is incompatible with the gate below, and the gate is the
+later, better-evidenced position.
+
+`strategy/two-hop-gtm.md` §A3 supersedes it explicitly: installing a GitHub App
+on an org-owned repo needs org owner/admin approval, which the wedge engineer —
+"the accidental-owner engineer... explicitly no budget or admin authority" — by
+definition does not have. A3 calls this "the modal case at enterprise", not an
+edge case, and concludes: "the App is not the trigger for Hop 1, it's the result
+of a successful, permission-free Hop 1 that the champion then upgrades... That
+reordering is the single biggest correction this pressure-test produces."
+
+So the Day 0 CTA points at the CLI alone (see `campaign/p1-data-drop.md`, which
+departs from P1's condition 3 for this reason). Pointing launch traffic at an
+install most readers cannot perform would convert worse *and* breach the gate.
+The App's role is Day 7-30, requested by a champion who has already seen CLI
+evidence.
+
 ## Sequencing gate — do not deploy publicly until
 
 Per `build/specs/05-github-app.md` §8 / R10's A3 fix:

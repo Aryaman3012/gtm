@@ -16,25 +16,58 @@ const path = require('path');
 const { numberThread, DISCLOSURE_LINE, RECURRENCE_CLOSE_LINE } = require('./oracle');
 
 const DEFAULT_SOURCE = path.join(__dirname, 'fixtures', 'sample-findings.json');
-const GALLERY_URL = 'https://drift.aryaman.tech/cards/';
-const MAX_FINDING_TWEETS = 6;
+// The index root, not /cards/ — directory listing is off, so that path 403s.
+const BROADCAST_DISCLOSURE_LINE =
+  'Disclosure: this is a candidate exercise for Atlan, not an Atlan product, and unaffiliated with any company in the scan. Method on the index.';
+const GALLERY_URL = 'https://drift.aryaman.tech';
+// Was 6, which produced a 10-tweet thread nobody finishes. The weekly delta
+// earns attention with the headline and the argument, not with an exhaustive
+// list — the index carries the full breakdown.
+const MAX_FINDING_TWEETS = 3;
 
 function loadFindings(sourcePath) {
   const raw = fs.readFileSync(sourcePath || DEFAULT_SOURCE, 'utf8');
   return JSON.parse(raw);
 }
 
+// The hook must match the framing the index itself uses (§3.4): the ungoverned
+// percentage is retracted — it measures a file convention, since public
+// libraries keep ownership in git rather than in frontmatter — and the drift
+// count being zero is the finding, not a gap to paper over.
 function hookTweet(findings) {
   const reposScanned = findings.reposScanned ?? 0;
   const totalSkills = findings.totalSkillsScanned ?? 0;
-  const pct = findings.ungovernedSkillPercentage ?? 0;
-  return `Ran skillsdrift across ${reposScanned} public skill repos this week. ${pct}% of the ${totalSkills} scanned skills show at least one governance gap.`;
+  const drifted = (findings.byRepo || []).reduce((n, r) => n + (r.drifted || 0), 0);
+
+  if (drifted === 0) {
+    return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week, looking for drift. Found none — and that is the finding. A public repo is one source of truth; it has nothing to disagree with.`;
+  }
+  return `Scanned ${totalSkills} public agent skills across ${reposScanned} repos this week. ${drifted} drifted pair(s): the same skill in two places, contents no longer matching.`;
 }
 
+// Drift only begins at the second copy, which happens inside companies where no
+// public scan reaches. That is the argument for running it yourself, so it is
+// the tweet that precedes the CTA rather than a line buried mid-thread.
+function whyItMattersTweet() {
+  return 'Drift starts at the second copy — a second repo, a second assistant, someone\'s laptop. All of that happens inside companies, in private. No public scan can see it; only your own can.';
+}
+
+// One aggregate line, not one tweet per category. Six near-identical tweets was
+// a thread nobody finishes, and the per-category breakdown belongs on the index
+// where it can be read at a glance rather than scrolled.
 function securityFindingTweets(findings) {
-  return (findings.securityCategorySummary || []).map(
-    (s) => `Security (category-level only, no repo named): ${s.count}x "${s.label}" pattern found across the sample.`
-  );
+  const cats = findings.securityCategorySummary || [];
+  if (cats.length === 0) return [];
+  const total = cats.reduce((n, c) => n + c.count, 0);
+  const named = cats
+    .slice()
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 2)
+    .map((c) => c.label)
+    .join(' and ');
+  return [
+    `${total} risky patterns across ${cats.length} categories in the same sample — most often ${named}. Reported by category across the whole sample, never tied to a named repo. Patterns worth a human look, not verdicts.`,
+  ];
 }
 
 function driftFindingTweets(findings) {
@@ -61,7 +94,15 @@ function buildBroadcastThread(findings) {
     ...duplicationFindingTweets(findings),
   ].slice(0, MAX_FINDING_TWEETS);
 
-  const parts = [hook, ...findingLines, RECURRENCE_CLOSE_LINE, DISCLOSURE_LINE, `Per-repo cards: ${GALLERY_URL}`];
+  const parts = [
+    hook,
+    ...findingLines,
+    whyItMattersTweet(),
+    RECURRENCE_CLOSE_LINE,
+    `Index, method and per-repo cards: ${GALLERY_URL}`,
+    'Run it on your own repos — local, read-only, no account, no network call: git clone https://github.com/Aryaman3012/gtm && node gtm/cli/skillsdrift.js .claude/skills .codex',
+    BROADCAST_DISCLOSURE_LINE,
+  ];
   return { tweets: numberThread(parts) };
 }
 

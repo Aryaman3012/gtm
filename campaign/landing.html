@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>skillsdrift pilot — governed agent skills for your team</title>
+<meta name="description" content="skillsdrift finds drifted, unowned, and risky agent skills in 30 seconds. The hosted pilot keeps your team's skills governed — always on.">
+<style>
+  :root{--bg:#0b0e14;--fg:#e6e8ee;--dim:#9aa3b2;--line:#232a38;--acc:#5eead4;--warn:#fbbf24;--card:#11151f;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{max-width:760px;margin:0 auto;padding:48px 20px 80px}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  h1{font-size:clamp(28px,5vw,40px);line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+  .sub{color:var(--dim);font-size:19px;margin-bottom:28px}
+  .sub b{color:var(--fg);font-weight:600}
+  .drift{display:block;margin:8px 0 30px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:14px 0}
+  .card h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--acc);margin-bottom:8px}
+  .card p{color:var(--dim)}
+  .card li{color:var(--dim);margin:4px 0 4px 18px}
+  .card li b{color:var(--fg)}
+  .not{border-color:#3a2f18}
+  .not h2{color:var(--warn)}
+  form{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+  input{flex:1;min-width:220px;background:#0b0e14;border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--fg);font-size:15px}
+  button{background:var(--acc);color:#032420;border:0;border-radius:8px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer}
+  button:hover{filter:brightness(1.1)}
+  .fine{color:var(--dim);font-size:13px;margin-top:8px}
+  footer{border-top:1px solid var(--line);margin-top:44px;padding-top:18px;color:var(--dim);font-size:13.5px}
+  footer p{margin-bottom:6px}
+  code{background:#1a2230;border-radius:5px;padding:2px 7px;font-size:.9em;color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Your team's agent skills are drifting apart.</h1>
+  <p class="sub">One engineer writes a skill. Teammates copy it into other repos. Weeks later, five versions exist, nobody owns any of them, and one has a <code>curl | bash</code> in it. <b>skillsdrift finds that in 30 seconds. The pilot keeps it from happening again.</b></p>
+
+  <svg class="drift" width="360" height="110" viewBox="0 0 360 110" role="img" aria-label="Diagram: one skill file becoming two drifted copies">
+    <circle cx="40" cy="55" r="14" fill="none" stroke="#5eead4" stroke-width="2"/>
+    <text x="40" y="59" text-anchor="middle" fill="#5eead4" font-size="10" font-family="monospace">v1</text>
+    <path d="M56 49 C 100 20, 150 25, 204 27" stroke="#9aa3b2" fill="none" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <path d="M56 61 C 100 90, 150 85, 204 83" stroke="#9aa3b2" fill="none" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <rect x="208" y="14" width="132" height="26" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="274" y="31" text-anchor="middle" fill="#fbbf24" font-size="10" font-family="monospace">copy A — drifted</text>
+    <rect x="208" y="70" width="132" height="26" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="274" y="87" text-anchor="middle" fill="#fbbf24" font-size="10" font-family="monospace">copy B — drifted</text>
+  </svg>
+
+  <div class="card">
+    <h2>The free diagnostic</h2>
+    <p>Run it against your skills directories — no account, no setup:</p>
+    <p><code>npx skillsdrift ~/repo-a/.claude/skills ~/repo-b/.claude/skills</code></p>
+    <p style="margin-top:8px">You get a report: which skills drifted (with the exact lines), which have no owner, which have no version, which contain risky patterns. It runs locally; nothing leaves your machine.</p>
+  </div>
+
+  <div class="card">
+    <h2>The pilot — what you get</h2>
+    <ul>
+      <li><b>Persistent drift monitoring</b> — every teammate's skills directory checked continuously, not once</li>
+      <li><b>Skill identity</b> — one canonical object per skill: owner, version, permissions</li>
+      <li><b>One-command install</b> into Claude Code and Codex from your team's governed registry</li>
+      <li><b>Usage and traces</b> — which version ran, who changed it, what happened</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Who it's for</h2>
+    <p>The engineer who "accidentally owns" the team's AI setup: you introduced Claude Code or Codex skills to your team, they spread repo to repo, and now you're the unofficial person who knows which copy is real. This turns that from a memory game into an object with an owner and a version.</p>
+  </div>
+
+  <div class="card not">
+    <h2>What it is not</h2>
+    <p>Not a marketplace. Not a public skills directory. No compliance certifications. The pilot is early — you'd be a design partner, not a customer on an invoice.</p>
+  </div>
+
+  <div class="card">
+    <h2>Join the pilot</h2>
+    <form onsubmit="event.preventDefault(); window.location.href='mailto:aryaman@example.invalid?subject=skillsdrift%20pilot&body=' + encodeURIComponent('Hi — I want to join the skillsdrift pilot. My work email: ' + document.getElementById('pemail').value);">
+      <input type="email" id="pemail" placeholder="work email" required aria-label="Work email">
+      <button type="submit">Join the pilot</button>
+    </form>
+    <p class="fine">Opens your mail client (form backend pending). Or star the repo and open an issue; we'll reach out. No spam, ever.</p>
+  </div>
+
+  <footer>
+    <p><b>Context:</b> skillsdrift + this pilot are part of a GTM candidate exercise for <a href="https://atlan.com">Atlan</a>'s Agent Registry (an unreleased Atlan product). Built by Aryaman — the repo link is set at publish time (MIT, runs locally).</p>
+    <p>The free CLI stays free regardless. The evidence behind this problem: Anthropic's own docs list "no versioning, no central registry, no team access control" as known gaps; Snyk's ToxicSkills found 36.82% of sampled marketplace skills contain security flaws.</p>
+  </footer>
+</main>
+</body>
+</html>

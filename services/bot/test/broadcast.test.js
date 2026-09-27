@@ -25,12 +25,27 @@ test('broadcast thread draft structure: hook + finding tweets + disclosure + gal
     'recurrence close missing'
   );
 
-  // hook is the first (numbered) tweet and carries the aggregate stat.
-  assert.ok(/\d+% of the \d+ scanned skills/.test(thread.tweets[0]));
+  // The hook carries the scan's scale and its result. It must NOT carry the
+  // ungoverned percentage: §3.4 retracts that figure (it measures a file
+  // convention, since public libraries keep ownership in git), and the index no
+  // longer shows it — a thread leading with it would contradict the page it
+  // links to.
+  assert.ok(/\d+ public agent skills across \d+ repos/.test(thread.tweets[0]), 'hook must state the scan scale');
+  assert.ok(
+    !/% of the \d+ scanned skills|ungoverned|governance gap/i.test(thread.tweets[0]),
+    `hook must not carry the retracted percentage: "${thread.tweets[0]}"`
+  );
 
-  // 3-6 finding tweets between hook and recurrence-close/disclosure/gallery tail.
-  const findingCount = thread.tweets.length - 4; // hook, recurrence, disclosure, gallery
-  assert.ok(findingCount >= 3 && findingCount <= 6, `expected 3-6 finding tweets, got ${findingCount}`);
+  // The thread must say why a public null matters, or the CTA has no argument
+  // behind it.
+  assert.ok(/second copy/.test(joined), 'thread must explain where drift actually starts');
+
+  // A CTA the reader can act on, and a link that is not a 403 directory index.
+  assert.ok(/skillsdrift\.js/.test(joined), 'thread must carry a runnable command');
+  assert.ok(!joined.includes('drift.aryaman.tech/cards/'), 'must not link the cards directory, which 403s');
+
+  // Short enough to finish reading.
+  assert.ok(thread.tweets.length <= 9, `thread too long to finish: ${thread.tweets.length} tweets`);
 
   // Security findings must never carry a repo name (only category label + count).
   const repoSlugs = (findings.byRepo || []).map((r) => r.slug);
