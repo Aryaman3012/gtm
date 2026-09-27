@@ -13,7 +13,8 @@ GTM candidate work sample by Aryaman Singh.
 | [`deck/atlan-deck.pdf`](deck/atlan-deck.pdf) | The readout deck |
 | [`deck/deck_fixes.md`](deck/deck_fixes.md) | The next revision of the deck: new slides, source links, and the revised order |
 | [`docs/research/`](docs/research/) | Working research: the pain-feeler sweep, the GitLab walkthrough, distribution inside a company, cross-functional adoption, thesis validation, and the devil's-advocate review |
-| [`skills/skillsdrift-bridge/`](skills/skillsdrift-bridge/) | **Built:** a Claude/Codex skill that reads a skill drift report, picks out the cross-functional skills, and shares links to each one's page in the org's Atlan dashboard over Slack, with consent at every step |
+| [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) | **The built thing.** What the skill does, a 30-second demo with real output, how it carries the "one becomes many" loop, the design decisions worth arguing about, and its limits |
+| [`skills/skillsdrift-bridge/`](skills/skillsdrift-bridge/) | Source for that skill: instructions, triage scripts, message templates and sample reports |
 | [`dist/skillsdrift-bridge.skill`](dist/skillsdrift-bridge.skill) | The packaged skill, ready to install in Claude |
 
 ## The position in five lines
@@ -33,6 +34,8 @@ python3 scripts/triage.py examples/sample-drift-report.md --format md
 ```
 
 Needs Python 3.8+ and no dependencies. It reads a report and doesn't touch the network. To use the full skill, install `dist/skillsdrift-bridge.skill` in Claude, or copy the folder into `~/.claude/skills/`. Then ask Claude to share your drift report with the teams that rely on those skills.
+
+See [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) for what it does, the expected output, and why it shares a governed link instead of a copy.
 
 ## Build status
 
