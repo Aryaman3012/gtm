@@ -1,0 +1,14 @@
+{
+  "schema": "atlan-registry-import/1",
+  "generated_at": "2026-09-26T10:00:00Z",
+  "headline": "68% of this team's agent skills have no named owner, no version marker, and no security review. That number only moves one way on its own: up.",
+  "skills": [
+    {"name": "qbr-prep", "description": "Prepare a QBR deck for an account executive before a renewal call using Salesforce and Gong.", "paths": ["/Users/ana/work/eng-repo/.claude/skills/qbr-prep/SKILL.md", "/Users/ana/work/sales-copy/.claude/skills/qbr-prep/SKILL.md"], "suggested_owner": {"handle": "priya", "email": "priya@acme.com"}, "used_by": ["priya@acme.com", "tom@acme.com"], "security": []},
+    {"name": "revenue-metric", "description": "Answer ARR and net revenue retention questions using the certified KPI definition for finance and the board deck.", "paths": ["data-repo/.claude/skills/revenue-metric/SKILL.md"], "version": "1.2", "security": []},
+    {"name": "pr-review", "description": "Review pull requests, run lint and unit tests, check migrations.", "paths": ["eng-repo/.claude/skills/pr-review/SKILL.md"], "suggested_owner": "platform-team"},
+    {"name": "crm-sync", "description": "Sync HubSpot deals into the sales pipeline sheet.", "paths": ["ops/.claude/skills/crm-sync/SKILL.md"], "security": ["hardcoded credential"]}
+  ],
+  "duplicate_groups": [
+    {"name": "qbr-prep", "members": ["eng-repo/.claude/skills/qbr-prep", "sales-copy/.claude/skills/qbr-prep"], "suggested_canonical": "eng-repo/.claude/skills/qbr-prep", "distinct_versions": 2}
+  ]
+}
