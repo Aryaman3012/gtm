@@ -19,7 +19,7 @@ GTM candidate work sample by Aryaman Singh.
 | [`dist/skillsdrift-bridge.skill`](dist/skillsdrift-bridge.skill) | The packaged skill, ready to install in Claude |
 | [`waitlist/`](waitlist/) | The pilot waitlist behind the report's CTA: a dependency-free Node service and its systemd unit. Stores job title and company domain, and nothing else |
 | [`services/`](services/) | The scanner, card generator, GitHub App and X bot. 48 tests across three suites, passing on Linux and macOS |
-| [`campaign/`](campaign/) | The launch material: the Day-0 data drop (HN, X, LinkedIn), creator outreach, the launch checklist and the awesome-list PR template |
+| [`campaign/`](campaign/) | The launch material: the Day-0 data drop (HN, X, LinkedIn), the three-prong X strategy with verified handles, creator outreach, the launch checklist and the awesome-list PR template |
 
 ## The position in five lines
 
