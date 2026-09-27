@@ -13,7 +13,8 @@ GTM candidate work sample by Aryaman Singh.
 | [`deck/atlan-deck.pdf`](deck/atlan-deck.pdf) | The readout deck |
 | [`deck/deck_fixes.md`](deck/deck_fixes.md) | The next revision of the deck: new slides, source links, and the revised order |
 | [`docs/research/`](docs/research/) | Working research: the pain-feeler sweep, the GitLab walkthrough, distribution inside a company, cross-functional adoption, thesis validation, and the devil's-advocate review |
-| [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) | **The built thing.** What the skill does, a 30-second demo with real output, how it carries the "one becomes many" loop, the design decisions worth arguing about, and its limits |
+| [`cli/`](cli/) | **Run this.** The `skillsdrift` CLI: scans agent-skills directories for drift, missing owners, missing versions and 11 security patterns, and writes a three-layer report plus an import-ready manifest. Fixtures and a 10-test suite included |
+| [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) | **The skill.** What it does, a 30-second demo with real output, how it carries the "one becomes many" loop, the design decisions worth arguing about, and its limits |
 | [`skills/skillsdrift-bridge/`](skills/skillsdrift-bridge/) | Source for that skill: instructions, triage scripts, message templates and sample reports |
 | [`dist/skillsdrift-bridge.skill`](dist/skillsdrift-bridge.skill) | The packaged skill, ready to install in Claude |
 
@@ -42,7 +43,7 @@ See [`SKILLSDRIFT-BRIDGE.md`](SKILLSDRIFT-BRIDGE.md) for what it does, the expec
 | Component | Status | Where |
 |---|---|---|
 | skillsdrift-bridge skill | ✅ Built, dry-run tested twice | This repo |
-| skillsdrift CLI: scan, drift diffs, security heuristics, three-layer report, import manifest | Built (per build logs) | VPS, not yet in this repo |
+| skillsdrift CLI: scan, drift diffs, 11 security heuristics, three-layer report, import manifest, check-in mode | ✅ Built; 10-test suite passes on Linux and macOS | [`cli/`](cli/) in this repo |
 | Scanner service, State of Skill Drift index, cards | Built (per build logs) | VPS, not yet in this repo |
 | GitHub App service | Built (per build logs); switching to issues/checks instead of cross-repo PRs | VPS, not yet in this repo |
 | X bot (@skillsdrift) | Built as drafts only; switching to private replies | VPS, not yet in this repo |

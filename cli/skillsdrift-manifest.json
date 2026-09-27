@@ -1,0 +1,132 @@
+{
+  "schema": "atlan-registry-import/1",
+  "generated_at": "2026-09-26T07:31:10.839Z",
+  "paths_scanned": [
+    "fixtures/repo-a/.claude/skills",
+    "fixtures/repo-b/.claude/skills"
+  ],
+  "skills": [
+    {
+      "name": "changelog-writer",
+      "paths": [
+        "fixtures/repo-a/.claude/skills",
+        "fixtures/repo-b/.claude/skills"
+      ],
+      "duplicate_group": 0,
+      "content_hash": "6655960400573b1553fd8828f0c344adc203ef2da756801005d0f7251d91517a",
+      "owner": "release-team@example.com",
+      "owner_suggestion": null,
+      "version": "2.3.0",
+      "version_suggestion": null,
+      "security_flags": [],
+      "suggested_action": "import"
+    },
+    {
+      "name": "installer-helper",
+      "paths": [
+        "fixtures/repo-a/.claude/skills"
+      ],
+      "duplicate_group": null,
+      "content_hash": "661065a04ea947bd13baeec5eaf7388f1cbd4dd8223898517f0843142c30f307",
+      "owner": "platform@example.com",
+      "owner_suggestion": null,
+      "version": "1.0.0",
+      "version_suggestion": null,
+      "security_flags": [
+        "curl-pipe-bash"
+      ],
+      "suggested_action": "review"
+    },
+    {
+      "name": "no-owner-skill",
+      "paths": [
+        "fixtures/repo-a/.claude/skills"
+      ],
+      "duplicate_group": null,
+      "content_hash": "3e2b4393cba6e9e19e8628d4dcf54c30ec8de1300edfef792afa9c61e2f2a309",
+      "owner": null,
+      "owner_suggestion": "last-editor-or-runner",
+      "version": "1.0.0",
+      "version_suggestion": null,
+      "security_flags": [],
+      "suggested_action": "import"
+    },
+    {
+      "name": "pdf-gen",
+      "paths": [
+        "fixtures/repo-a/.claude/skills"
+      ],
+      "duplicate_group": 1,
+      "content_hash": "272a13bfe686a4647e887f1ec9b5fcfd43c2064af8334ae10014af6d6232a8ae",
+      "owner": "aryaman@example.com",
+      "owner_suggestion": null,
+      "version": "1.0.0",
+      "version_suggestion": null,
+      "security_flags": [],
+      "suggested_action": "merge"
+    },
+    {
+      "name": "pdf-gen",
+      "paths": [
+        "fixtures/repo-b/.claude/skills"
+      ],
+      "duplicate_group": 1,
+      "content_hash": "38acc252c8e6da56f57406619d802fc3214c7e2a1fd5e216b810e5771d9b7ad5",
+      "owner": "aryaman@example.com",
+      "owner_suggestion": null,
+      "version": "1.1.0",
+      "version_suggestion": null,
+      "security_flags": [],
+      "suggested_action": "merge"
+    },
+    {
+      "name": "legacy-webhook",
+      "paths": [
+        "fixtures/repo-b/.claude/skills"
+      ],
+      "duplicate_group": null,
+      "content_hash": "9dbc5b9ff5c76bc8db2e0ecbeda29ebbe896c941acce4eb19f6473b6f4972636",
+      "owner": "platform@example.com",
+      "owner_suggestion": null,
+      "version": "0.9.0",
+      "version_suggestion": null,
+      "security_flags": [
+        "aws-access-key",
+        "eval-call"
+      ],
+      "suggested_action": "review"
+    },
+    {
+      "name": "no-version-skill",
+      "paths": [
+        "fixtures/repo-b/.claude/skills"
+      ],
+      "duplicate_group": null,
+      "content_hash": "21de77a837e6ab577dc9dc6eb87564cf2809d5d0776e34735ffac48548c997f1",
+      "owner": "oncall@example.com",
+      "owner_suggestion": null,
+      "version": null,
+      "version_suggestion": "1.0.0",
+      "security_flags": [],
+      "suggested_action": "import"
+    }
+  ],
+  "duplicate_groups": [
+    {
+      "id": 0,
+      "members": [
+        "fixtures/repo-a/.claude/skills/changelog-writer",
+        "fixtures/repo-b/.claude/skills/changelog-writer"
+      ],
+      "suggested_canonical": "fixtures/repo-a/.claude/skills/changelog-writer"
+    },
+    {
+      "id": 1,
+      "members": [
+        "fixtures/repo-a/.claude/skills/pdf-gen",
+        "fixtures/repo-b/.claude/skills/pdf-gen"
+      ],
+      "suggested_canonical": "fixtures/repo-b/.claude/skills/pdf-gen"
+    }
+  ]
+}

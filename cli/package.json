@@ -1,0 +1,27 @@
+{
+  "name": "skillsdrift",
+  "version": "2.0.0",
+  "description": "Zero-account CLI that audits Claude Code / Codex agent-skills directories for drift, missing ownership, missing versioning, and basic security risk patterns — a 3-layer report (engineer / team / exec), an import-ready manifest, dual-language output, and a check-in mode.",
+  "license": "MIT",
+  "author": "Aryaman",
+  "bin": {
+    "skillsdrift": "./skillsdrift.js"
+  },
+  "files": [
+    "skillsdrift.js",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude-code",
+    "agent-skills",
+    "cli",
+    "audit",
+    "security",
+    "drift"
+  ]
+}

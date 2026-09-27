@@ -1,6 +1,6 @@
 # skillsdrift-bridge
 
-**The one thing in this repo that is built and runnable, not proposed.**
+**Built and runnable, not proposed.** (The other one is the [`skillsdrift` CLI](cli/).)
 
 A Claude/Codex skill that takes a skill drift report, works out which of the skills in it are used by people *outside* engineering, and shares a link to each skill's page in the org's Atlan dashboard with the right teammates over Slack — asking permission at every step.
 
