@@ -18,10 +18,12 @@ Sections 1 and 2 are complete. Each answer gives the position, the reasoning beh
 
 | # | Gap | Where |
 |---|---|---|
-| G1 | Nothing is live yet: domain, npm, waitlist | 3.1, 3.5, 3.10 |
+| ~~G1~~ | ~~Nothing is live yet~~ — **resolved.** drift.aryaman.tech serves the index, cards and waitlist over HTTPS | 3.1, 3.5, 3.10 |
+| ~~G3~~ | ~~Continue / change / stop thresholds not set~~ — **resolved**, with one caveat: the individual→team gate cannot be measured until the team scan exists | 3.9 |
+| G1b | npm publish, and X credentials for the bot. Both need credentials rather than work | 3.1, 3.6 |
 | G2 | Atlan hasn't defined "team" | 3.8 |
-| G3 | Continue / change / stop thresholds not set | 3.9 |
 | G4 | Atlan capabilities unconfirmed: per-skill URLs, manifest import, sandbox workspace | 2.4, 3.5 |
+| G5 | Team scan, forwarded-note output and opt-in rollup are designed only — §1.8 steps 2–4, the individual→team leap | 3.10 |
 
 ---
 
@@ -339,139 +341,153 @@ On the business side, teams already receive AI tools through their company's plu
 ---
 
 
-# Section 3: campaign and build (in progress)
+# Section 3: the campaign, and what shipped
 
-## 3.1 What is the first campaign, ready to run? ❌ (designed, not live)
+*Section 3 in depth, with the reasoning and the corrections, is
+[`docs/section-3.md`](section-3.md). This is the summary, kept consistent with it.*
 
-**Answer.** **"State of Skill Drift."** A public data drop plus a free 30-second local audit, launched where platform engineers gather, and followed by the inside-the-company loop (1.8).
+## 3.1 What is the first campaign, ready to run? ✅
 
-**Blockers before it can run (this week):**
-1. drift.aryaman.tech resolves, but isn't serving pages yet. It needs a reverse proxy and a TLS certificate.
-2. The CLI isn't on npm yet. The `skillsdrift` name is currently unclaimed.
-3. The waitlist backend isn't built.
-4. The reframed data-drop metrics (3.4) need to be computed.
+**Answer.** **"State of Skill Drift."** A public data drop paired with a free
+30-second local audit, launched where platform engineers already are.
+
+**The finding it leads with:** Anthropic publishes 20 official agent skills.
+Twelve are in circulation elsewhere in versions that no longer match, and every
+one of those twelve has drifted. The copies are two months stale — frozen
+2026-07-24 while Anthropic's repo moved on 2026-09-24 — and differ by 111, 108
+and 53 files in the worst cases.
+
+The hook went through two wrong versions first. The second — *"I scanned 951
+skills and found no drift, and that's the finding"* — was false: the scanner
+compared each repository against itself, so a per-repo scan reports zero
+cross-repo drift by construction. That mistake is kept in the published post,
+because an author fooled by his own null result is better evidence that the
+failure mode is real than a clean result would be.
+
+Drafts for Show HN, X and LinkedIn: `campaign/p1-data-drop.md`.
 
 ## 3.2 Who is the audience? ✅
 
-**Answer.** The ICP: **platform and DevEx engineers at 200–2,000 person companies with two or more AI tools.** They're reached through GitHub, HN, X and platform-engineering communities, and filtered by the observable signal in 1.1.
-
-Heads of AI see the data drop's LinkedIn version, so the question "do we have this?" reaches them while their engineers already have the answer. That's a side effect, not a second audience.
+Platform and DevEx engineers at 200–2,000 person companies that officially allow
+two or more AI tools. The qualifier doing the work is *two or more tools*:
+inside a single tool the vendor now governs skills properly, so the pain has
+moved to the seams.
 
 ## 3.3 What is the offer? ✅
 
-**Answer.** *"See how your team's AI skills have drifted across tools and repos in 30 seconds. Nothing leaves your machine."* Once the report has shown the value, the next step is *"Import this inventory into a governed pilot."*
+*"See how your team's AI skills have drifted across tools and repos in 30
+seconds. Nothing leaves your machine."* Then: *"Import this inventory into a
+governed pilot."* It deliberately gives away no free fragment — no badge, no
+score, no dashboard — that would satisfy the need in one session.
 
-**Why this offer.** No risk to the user, and the pain shows before anything is asked of them. It also deliberately gives away no free piece (no badges, no scores, no standalone server) that would satisfy the need in one session and stop people from going further.
+## 3.4 What is the channel-native acquisition asset? ✅
 
-## 3.4 What is the channel-native acquisition asset? ⚠️
+The CLI, the State of Skill Drift index, per-repo cards, and the X bot that
+scans on request. All built and tested.
 
-**Answer.**
-- the CLI (GitHub and npm)
-- the **State of Skill Drift** data drop, with a live index and a weekly update
-- shareable skill cards: ≤50 KB, redacted, no scores
-- a demo of the bridge skill
+**What the drop reports, and refuses to.** No ungoverned percentage — retracted,
+it measures a file convention. Security by category across the whole sample,
+never against a named repository. No call-out marketing: creators are offered a
+scan, nobody receives a pre-made one.
 
-**The data drop is reframed.** The earlier headline ("951 public skills, 100% with no owner field") measured a definition. Public libraries keep ownership in git, not in the file. The new headline measures things that matter inside a company:
-- **Duplicates and drift:** the same skill found in multiple public repos in different versions.
-- **Risky patterns by category:** hardcoded credentials, instructions that pull unpinned remote content, prompt-injection patterns.
-- **Maintenance:** skills with no changes in N months while the tools they target have moved on.
+## 3.5 What is the destination or activation experience? ✅
 
-Each number says exactly what it measures and what it doesn't.
+Local scan → three-layer report → import-ready manifest → the pilot waitlist.
 
-**No call-out marketing.** Named repos are scanned only when their owner asks. The public data drop reports only aggregates. The X account replies with a private link, not a public verdict, unless the person asking maintains the repo. Creators are offered a scan; nobody receives a pre-made one.
-
-**Why ⚠️.** The reframed metrics haven't been computed yet.
-
-## 3.5 What is the destination or activation experience? ⚠️
-
-**Answer.**
-1. local scan
-2. three-layer report
-3. team scan and forwarded notes
-4. an import-ready manifest
-5. the waitlist, which asks for job title and company domain
-
-For shared skills, the landing is the skill's page in the Atlan dashboard where the company has Atlan, or a neutral skill card on drift.aryaman.tech where it doesn't. The free scan deliberately mirrors the registry's own onboarding, which "scans the skills and sessions already on my laptop."
-
-**Why ⚠️.** The waitlist and card site aren't live (G1), and Atlan links depend on Atlan (G4).
+**Live:** <https://drift.aryaman.tech> serves the index, six cards, `/waitlist`
+and `/api/waitlist` over valid TLS, certificate to 26 December, auto-renewing.
+The waitlist collects job title and company domain and nothing else — no IP, no
+user agent, no cookies, no third-party script.
 
 ## 3.6 What is the call to action? ✅
 
-**Answer.**
-- **Primary:** "Run the scan."
-- **Inside the company:** "Forward this to the owners" and "Claim your skills."
-- **Once value is proven:** "Import into a governed pilot."
-- **For people receiving a shared link:** "Open the current version."
+"Run the scan." Inside the company: "Forward this to the owners", "Claim your
+skills." Once value is proven: "Import into a governed pilot."
 
-## 3.7 What are the launch mechanics? ⚠️
+Currently a `git clone` rather than `npx skillsdrift`, because the package is
+not published. The published CTA briefly said `npx skillsdrift` and returned an
+npm 404 for everyone who tried it.
 
-**Answer.**
-- **Day 0:** the data drop on HN and LinkedIn, with the CLI live.
-- **Days 1–7:** posts in platform-engineering communities. Offer (don't push) scans to authors whose public writing shaped the thesis.
-- **Days 7–30:** submissions to curated lists, only once there's real usage. A Show HN once there's usage. The GitHub App opens to champions.
-- **In parallel:** 3–5 Atlan customers as design partners for the inside-the-company loop.
-- **Dropped:** a campaign around the ChatGPT custom-GPT retirement (11 Dec 2026) [R4]. OpenAI's own migration already turns GPTs into plugins with skills, and those buyers are a different workload from the ICP. It stays as a trigger to ask about in interviews, not a campaign.
+## 3.7 What are the launch mechanics? ✅
 
-**Why ⚠️.** Dates depend on G2.
+Day 0: data drop on HN, X and LinkedIn, plus Bluesky. Days 1–7: creator
+amplification and staggered disclosed beta-tester posts. Days 7–30: awesome-list
+submissions once there is real usage to cite.
+
+**The X plan is in `campaign/x-distribution.md`**, and it corrects an assumption
+worth recording: the obvious "get the big skills repos to repost" move conflates
+*relevance to the finding* with *incentive to amplify it*. For the most relevant
+account those point in opposite directions. The launch is carried instead by the
+self-correction travelling on its own merit, by engagement from maintainers
+rather than amplification, and by clean results being the only genuinely
+repostable news.
 
 ## 3.8 What is the measurement plan? ⚠️
 
-**Answer.** The CLI sends nothing by default. Every signal below comes from something the user chose to do, or from our own servers.
+The CLI sends nothing by default. Waitlist signups by domain and GitHub traffic
+by org are live; the opt-in ping, rollup and link service are not built.
 
-| Stage | Signal | Source |
-|---|---|---|
-| Reach | Data-drop and card page views, npm downloads, GitHub stars | Server logs, npm, GitHub |
-| First value | Cards created; waitlist sign-ups with title and company domain | Card service, waitlist |
-| Opt-in usage | One anonymous "scan completed" event (CLI version, skill count, scope: local or team). The CLI asks once and it's off unless the user says yes. | Opt-in ping |
-| Spread inside a company | Opt-in rollup contributors per domain; skills claimed; notes forwarded through the bridge skill | Rollup service, bridge log |
-| Crossing into non-tech | Shared links opened, grouped by the recipient's function. The bridge skill records the function at send time, and each link carries a random token, with no personal data in the URL. | Link service |
-| Champion | GitHub App installs per domain; time from first scan to install | App service |
-| Activation | Per the 2.3 definition, counted in design partners and imported workspaces | Registry |
+**Working definition of "team"** until Atlan confirms: *a group of ≥5 people who
+share at least one governed skill with a named owner.* (G2)
 
-**Working definition of "team"** until Atlan confirms: *a group of ≥5 people who share at least one governed skill with a named owner.* Several teams can exist in one company. That's why the target changes from roughly 667 companies (1 team each: 100 activated ÷ a 50% deployment rate ÷ a 30% conversion rate) to far fewer if Atlan counts teams within a company separately.
-
-**Why ⚠️.** Instrumentation isn't built yet (G1), and the definition needs Atlan (G2).
-
-## 3.9 What signal would make us continue, change or stop? ⚠️
-
-**Answer.**
+## 3.9 What signal would make us continue, change or stop? ✅
 
 | Gate | Continue | Change | Stop |
 |---|---|---|---|
-| Discovery interviews | ≥ **[A]** of 8 describe drift across tools without prompting | Pain is real but within one tool → reposition to the gaps between apps and assistants | Fewer than **[B]** of 8 feel it → rethink the ICP |
-| Launch wave | ≥ **[C]** companies matching the ICP signal complete a scan | Scans come mostly from companies under 200 people → shift to platform-engineering communities | Two waves under target → rethink the channel |
-| Team → company | ≥ **[D]**% of opted-in scanners run a team scan | Low → the report isn't making the case for looking wider | — |
-| Crossing into non-tech | Shared links opened by ≥1 non-engineering function within **[E]** days at design partners | Engineering-only → run the cross-functional sharing in one function by hand | — |
-| Champion | App installs at design partners | Champions engage but leaders don't → reframe the summary for leaders | — |
+| Discovery interviews | ≥ 5 of 8 describe drift across tools unprompted | 3–4 → pain contained in one tool; reposition | < 3 of 8 → the ICP filter is wrong |
+| Launch wave | ≥ 25 ICP-matching companies complete a scan | Scans cluster below 200 people → shift communities | Two waves under target → rethink the channel |
+| Individual → team | ≥ 15% of opted-in scanners run a team scan | Lower → the report isn't making the case | — |
+| Crossing into non-tech | A shared link opened by ≥1 non-engineering function within 14 days | Engineering-only → run it by hand in one function | — |
+| Champion | App installs at design partners | Champions engage, leaders don't → reframe for leaders | — |
 
-**Numbers to set: [A]–[E] (G3).** Everything else in the table is fixed.
+25 comes from the plan's own arithmetic: 8–20k best-case readers, ~5%
+visitor-to-run, most outside the ICP filter, leaving 20–100 matching companies.
+**The 15% gate cannot be measured today** — the team scan does not exist, and a
+threshold resting on an unbuilt artifact is not a gate. (G5)
 
-## 3.10 What did we leave behind that Atlan can click, run or inspect? ⚠️
+## 3.10 What did we leave behind that Atlan can click, run or inspect? ✅
 
-**Answer.**
+Six working systems, all in the repository, **58 tests across four suites,
+passing on Linux and macOS**. This previously read "built, per build logs" for
+five of them, which is not something a reviewer can check.
 
 | Artifact | State |
 |---|---|
-| **skillsdrift CLI:** scan, drift diffs, 11 security heuristics, three-layer report, import manifest, check-in mode | Built and tested (per build logs) |
-| **Scanner service:** public repo scans, index, weekly update | Built (per build logs) |
-| **Card generator + gallery** | Built (per build logs) |
-| **@skillsdrift bot on X:** human approval is enforced in code, and it replies privately by default | Built as drafts only; policy updated per 3.4 |
-| **GitHub App service:** signed webhooks, weekly checks, no auto-fixes | Built (per build logs) |
-| **skillsdrift-bridge skill:** reads a drift report, picks cross-functional skills, shares governed links on Slack with consent | Built, and tested twice in dry runs |
+| **skillsdrift CLI** — drift, 11 security heuristics, three-layer report, import manifest | ✅ 10 tests · `cli/` |
+| **Scanner + card generator + cross-repo pass** | ✅ 10 tests · `services/scanner/` |
+| **GitHub App** — weekly check, opens an **issue** not a PR | ✅ 8 tests · built, deliberately unregistered |
+| **X bot** — public reply distributes, security goes by DM | ✅ 30 tests · no X credentials, cannot post |
+| **skillsdrift-bridge skill** | ✅ Dry-run tested twice · `skills/`, `dist/` |
+| **Site + waitlist** | ✅ Live |
 
-**Why ⚠️.** Nothing is publicly clickable yet (G1), and the builds weren't re-verified on the server in this pass. The minimum to have before the working session: the domain serving the index and cards, `npx skillsdrift` working, and a recorded demo of the bridge skill.
+**The App is unregistered deliberately.** `two-hop-gtm.md` §A3: an org-level
+GitHub App install needs admin rights the wedge engineer is defined not to have,
+so *"the App is not the trigger for Hop 1, it's the result of a successful,
+permission-free Hop 1."* The Day 0 CTA therefore points at the CLI alone.
 
-## 3.11 Is it what the thesis requires, and has it taught us anything? ⚠️
+## 3.11 Is it what the thesis requires, and has it taught us anything? ✅
 
-**Answer.**
-- **Required: yes.** The thesis is that artifacts travel and people don't. The CLI carries the first step, the report and summary carry the step to the champion, and the bridge skill carries the crossing into non-tech.
-- **Learned so far, from building:**
-  - The file-level "no owner" stat measures a definition, not a problem, so the data drop was reframed.
-  - The natural thing to share is a link, not a file.
-  - Suggested owners must never be presented as confirmed owners.
-  - An App install means a champion already exists, so it can't be the way in.
-  - GitLab's handbook shows the operating model this product needs already exists in real companies.
-- **Not learned yet: anything from users.** That comes from launching (G1) this week.
+**Required: yes**, with one real gap — §1.8 steps 2–4, the individual→team leap,
+have no artifact yet. The ends are built; the middle is not.
+
+**What building it taught, beyond the earlier list:**
+
+- **A null result is a claim and needs the same scrutiny as a positive one.** An
+  entire narrative was built on a zero before anyone asked whether the
+  measurement could have produced anything else. It could not.
+- **A tool can lie quietly.** `process.exit()` discarded buffered stdout on a
+  pipe: 146,103 bytes delivered of 1,469,069, no error on either side. Every
+  user piping `--json` into `jq` had been getting truncated reports.
+- **A generated artifact drifts from its source too.** The packaged `.skill`
+  file was built by hand and silently omitted its examples — in a project about
+  things drifting from their sources.
+- **The rules bind us first.** The index published a security count against a
+  named company before anyone noticed it breached the project's own condition.
+- **Relevance is not incentive.** The people most affected by a finding are the
+  least likely to amplify it.
+
+**Not learned yet: anything from users.** That still needs a launch, which needs
+one npm publish and one outreach email.
 
 ---
 
