@@ -10,6 +10,7 @@ GTM candidate work sample by Aryaman Singh.
 |---|---|
 | [`docs/section-3.md`](docs/section-3.md) | **The campaign.** Section 3 in full: what runs on Day 0, the reasoning behind each choice, the two places that reasoning was wrong, proposed values for the open gates, and an inventory of everything submitted |
 | [`docs/core_challenge_answers.md`](docs/core_challenge_answers.md) | **Start here.** Answers to sections 1–3 of the challenge, plus a resources and evidence appendix (sources, discovery notes, assumptions, rejected alternatives) |
+| [`docs/ai_work_log.md`](docs/ai_work_log.md) | The AI work log: approach, models and harnesses, reusable workflows, where the AI was wrong, and the decision it couldn't make |
 | [`docs/working-doc-final.pdf`](docs/working-doc-final.pdf) | The long-form working document: the reasoning, how the thesis changed along the way, the landscape, a GitLab worked example, the build status, and a devil's-advocate pass |
 | [`deck/atlan-deck.pdf`](deck/atlan-deck.pdf) | The readout deck |
 | [`deck/deck_fixes.md`](deck/deck_fixes.md) | The next revision of the deck: new slides, source links, and the revised order |
@@ -20,6 +21,7 @@ GTM candidate work sample by Aryaman Singh.
 | [`dist/skillsdrift-bridge.skill`](dist/skillsdrift-bridge.skill) | The packaged skill, ready to install in Claude |
 | [`waitlist/`](waitlist/) | The pilot waitlist behind the report's CTA: a dependency-free Node service and its systemd unit. Stores job title and company domain, and nothing else |
 | [`services/`](services/) | The scanner, card generator, GitHub App and X bot. 48 tests across three suites, passing on Linux and macOS |
+| [`docs/ai-work-log-ship-session.md`](docs/ai-work-log-ship-session.md) | AI work log for the shipping session: approach, models, reusable workflows, where the AI was wrong, and the call it could not make |
 | [`campaign/`](campaign/) | The launch material: the Day-0 data drop (HN, X, LinkedIn), the three-prong X strategy with verified handles, creator outreach, the launch checklist and the awesome-list PR template |
 
 ## The position in five lines
