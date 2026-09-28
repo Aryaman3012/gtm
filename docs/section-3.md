@@ -11,6 +11,15 @@ systems in detail, because that is where the weight of the brief sits.
 Every figure was verified at the time of writing by running the thing that
 produces it.
 
+| | |
+|---|---|
+| **Code and documents** | <https://github.com/Aryaman3012/gtm> — MIT licensed, public |
+| **Live site** | <https://drift.aryaman.tech> — index, per-repo cards, pilot waitlist |
+| **Run it in two commands** | `git clone https://github.com/Aryaman3012/gtm` then `node gtm/cli/skillsdrift.js .claude/skills .codex` |
+
+Relative links below point inside that repository. Node 18+ and Python 3.8+, no
+dependencies, no network calls, no account.
+
 ---
 
 ## The campaign in one table

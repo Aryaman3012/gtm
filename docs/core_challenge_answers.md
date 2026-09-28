@@ -6,6 +6,17 @@ Sections 1 and 2 are complete. Each answer gives the position, the reasoning beh
 
 ---
 
+## Where everything is
+
+| | |
+|---|---|
+| **Code and documents** | <https://github.com/Aryaman3012/gtm> — MIT licensed, public |
+| **Live site** | <https://drift.aryaman.tech> — the State of Skill Drift index, per-repo cards, pilot waitlist |
+| **Run the scan in two commands** | `git clone https://github.com/Aryaman3012/gtm` then `node gtm/cli/skillsdrift.js .claude/skills .codex` |
+
+Everything referenced below is in that repository. Node 18+ and Python 3.8+,
+no dependencies, no network calls, no account.
+
 ## The position in five lines
 
 - **ICP:** platform and developer-experience (DevEx) engineers at software companies of ~200–2,000 people that officially allow two or more AI coding or assistant tools.
@@ -382,13 +393,42 @@ score, no dashboard — that would satisfy the need in one session.
 
 ## 3.4 What is the channel-native acquisition asset? ✅
 
-The CLI, the State of Skill Drift index, per-repo cards, and the X bot that
-scans on request. All built and tested.
+Four assets, all built and tested. Each one is a link you can open or a command
+you can run — everything lives in <https://github.com/Aryaman3012/gtm>.
 
-**What the drop reports, and refuses to.** No ungoverned percentage — retracted,
-it measures a file convention. Security by category across the whole sample,
-never against a named repository. No call-out marketing: creators are offered a
-scan, nobody receives a pre-made one.
+| Asset | What it is | Where |
+|---|---|---|
+| **The `skillsdrift` CLI** | A local, read-only audit. Finds the same skill in two places with different contents, plus missing owners, missing versions and 11 security patterns. Writes a three-layer report (engineer / team / exec) and an import-ready manifest | [`cli/`](https://github.com/Aryaman3012/gtm/tree/main/cli) |
+| **The State of Skill Drift index** | The weekly public scan the data drop is built on | <https://drift.aryaman.tech> |
+| **Per-repo cards** | The shareable unit, one per scanned repository | e.g. [anthropics/skills](https://drift.aryaman.tech/cards/anthropics--skills.html) |
+| **The X bot** | Scans a repository on request when someone posts `@skillsdrift scan <repo>`, replies publicly with the card, and sends any security detail by DM | [`services/bot/`](https://github.com/Aryaman3012/gtm/tree/main/services/bot) |
+
+**Try the CLI without installing anything.** Two fixture repositories ship with
+drift planted in them, so it produces a real result on a machine that has never
+seen an agent skill:
+
+```bash
+git clone https://github.com/Aryaman3012/gtm
+cd gtm/cli
+node skillsdrift.js fixtures/repo-a fixtures/repo-b
+```
+
+That scans 8 skills across 2 paths and reports 1 drifted pair, 1 unowned, 1
+unversioned and 2 security-flagged, then writes the report and manifest next to
+you. Node 18+, no dependencies, no network call, no telemetry. The committed
+[`cli/skillsdrift-report.md`](https://github.com/Aryaman3012/gtm/blob/main/cli/skillsdrift-report.md)
+is that exact output if you would rather read than run.
+
+**What the data drop reports, and what it refuses to.** Three rules, each with a
+reason rather than a preference:
+
+1. **No ungoverned percentage.** Retracted — it measures a file convention,
+   since public libraries keep ownership in git rather than in the skill file.
+2. **Security by category across the whole sample, never against a named
+   repository.** A named company beside a security pattern is an accusation,
+   not a statistic.
+3. **No call-out marketing.** Named repositories are scanned when their owner
+   asks. Creators are offered a scan; nobody receives a pre-made one.
 
 ## 3.5 What is the destination or activation experience? ✅
 
@@ -575,7 +615,7 @@ one npm publish and one outreach email.
 
 | # | What | Where |
 |---|---|---|
-| R40 | skillsdrift CLI, scanner service, cards, GitHub App, X bot | Repo link to add once published · drift.aryaman.tech (not serving yet) |
+| R40 | skillsdrift CLI, scanner service, cards, GitHub App, X bot | <https://github.com/Aryaman3012/gtm> · live at <https://drift.aryaman.tech> |
 | R41 | skillsdrift-bridge skill (reads a report, shares Atlan links on Slack) | Attached skill package |
 | R42 | Scan of 951 public skills across anthropics/skills, vercel-labs/skills, microsoft/azure-skills, ComposioHQ | Scanner output (see 3.4 for what it does and doesn't measure) |
 
