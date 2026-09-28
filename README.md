@@ -8,6 +8,7 @@ GTM candidate work sample by Aryaman Singh.
 
 | Path | What it is |
 |---|---|
+| [`docs/section-3.md`](docs/section-3.md) | **The campaign.** Section 3 in full: what runs on Day 0, the reasoning behind each choice, the two places that reasoning was wrong, proposed values for the open gates, and an inventory of everything submitted |
 | [`docs/core_challenge_answers.md`](docs/core_challenge_answers.md) | **Start here.** Answers to sections 1–3 of the challenge, plus a resources and evidence appendix (sources, discovery notes, assumptions, rejected alternatives) |
 | [`docs/working-doc-final.pdf`](docs/working-doc-final.pdf) | The long-form working document: the reasoning, how the thesis changed along the way, the landscape, a GitLab worked example, the build status, and a devil's-advocate pass |
 | [`deck/atlan-deck.pdf`](deck/atlan-deck.pdf) | The readout deck |
