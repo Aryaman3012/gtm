@@ -18,7 +18,7 @@ suites, and live status from HTTP checks against the running site.
 | | |
 |---|---|
 | **Campaign** | "State of Skill Drift" — a public data drop plus a free 30-second local audit |
-| **Day 0 hook** | 12 drifted pairs found across 951 public skills, *and* the fact that the first scan said zero because it was asking the wrong question |
+| **Day 0 hook** | Anthropic publishes 20 official agent skills; 12 are in circulation elsewhere and **all 12 have drifted** — plus the fact that the first scan said zero because it was asking the wrong question |
 | **Live now** | <https://drift.aryaman.tech> — index, six cards, pilot waitlist, valid TLS |
 | **Built and tested** | CLI, scanner, card generator, GitHub App, X bot, bridge skill — 58 tests, passing on Linux and macOS |
 | **Blocking Day 0** | npm publish (needs credentials), and the creator outreach that must precede a finding about someone's repository |
@@ -62,13 +62,23 @@ drift *by construction*. The zero was a property of how the question was asked.
 *Third and current version:* run the same engine over every repository at once
 and the drift appears immediately.
 
-> Twelve skills exist in two public repositories with contents that no longer
-> match. Every one is an official skill copied into a community collection,
-> which then stood still while the original kept moving.
+> **Anthropic publishes 20 official agent skills. Twelve of them are in
+> circulation elsewhere in versions that no longer match the original — and
+> every single one of those twelve has drifted. Twelve for twelve.**
 
-The copies are two months behind — frozen at 2026-07-24 while the source moved
-on 2026-09-24. The largest divergences are substantial: 111 files differ in one
-skill, 108 in another, 53 in a third. Anyone can reproduce it.
+Not "some copies go stale": every copy found, without exception. The copies are
+two months behind — frozen at 2026-07-24 while Anthropic's repo moved on
+2026-09-24 — and the divergences are not cosmetic: 111 files differ in `docx`,
+108 in `pptx`, 53 in `xlsx`. They still carry Anthropic's own
+`license: Proprietary` line, which is how you can tell they are vendored
+snapshots rather than independent work sharing a name. Anyone can reproduce it.
+
+**Anthropic is named; the collection holding the copies is not.** Anthropic is
+the source, and theirs is the repository that moved forward correctly — nothing
+here reflects badly on them, and the finding is only legible if the canonical
+side has a name. The copier is the side a name would injure, gains nothing from
+being identified, and is covered by the project's own rule that the data drop
+reports patterns rather than parties.
 
 **Why the mistake stays in the post.** It is the most persuasive part. A tool
 that finds drift is a claim; an author who was fooled by his own null result and
@@ -259,40 +269,63 @@ open questions for Atlan.**
 
 ## 3.9 What signal would make us continue, change or stop?
 
-The placeholders [A]–[E] were unset. Proposed values and the derivation for
-each, so they can be argued with rather than accepted:
+The original table left five numbers as placeholders, `[A]` to `[E]`, with
+everything around them fixed. Each letter is a specific threshold. Here is what
+each one *is*, the value proposed for it, and the derivation — so the numbers
+can be argued with rather than accepted.
+
+### What each placeholder stands for
+
+| | The question it answers | Proposed |
+|---|---|---|
+| **[A]** | Of 8 discovery interviews, how many must describe drift **across tools**, unprompted, for the thesis to be worth continuing? | **5 of 8** |
+| **[B]** | Below how many of those 8 do we conclude the ICP itself is wrong and stop? | **3 of 8** |
+| **[C]** | How many companies **matching the ICP signal** must complete a scan during the launch wave? | **25 companies** |
+| **[D]** | What share of opted-in scanners must go on to run a **team** scan — the individual→team leap? | **15%** |
+| **[E]** | How many days do we give a shared link to be opened by a **non-engineering** function at a design partner? | **14 days** |
+
+### The gates, with the numbers filled in
 
 | Gate | Continue | Change | Stop |
 |---|---|---|---|
-| Discovery interviews | ≥ **5** of 8 describe drift across tools unprompted | 3–4 → pain is real but within one tool; reposition to the app/assistant gap | < **3** of 8 → rethink the ICP |
-| Launch wave | ≥ **25** ICP-matching companies complete a scan | Scans cluster below 200 people → shift to platform-engineering communities | Two waves under target → rethink the channel |
-| Team → company | ≥ **15%** of opted-in scanners run a team scan | Lower → the report is not making the case for looking wider | — |
-| Crossing into non-tech | A shared link opened by ≥1 non-engineering function within **14** days at a design partner | Engineering-only → run the cross-functional share by hand in one function | — |
+| Discovery interviews | ≥ **[A] = 5** of 8 describe drift across tools unprompted | 3–4 → pain is real but contained within one tool; reposition to the app/assistant gap | < **[B] = 3** of 8 → rethink the ICP |
+| Launch wave | ≥ **[C] = 25** ICP-matching companies complete a scan | Scans cluster below 200 people → shift to platform-engineering communities | Two waves under target → rethink the channel |
+| Team → company | ≥ **[D] = 15%** of opted-in scanners run a team scan | Lower → the report is not making the case for looking wider | — |
+| Crossing into non-tech | A shared link opened by ≥1 non-engineering function within **[E] = 14** days at a design partner | Engineering-only → run the cross-functional share by hand in one function | — |
 | Champion | App installs at design partners | Champions engage, leaders do not → reframe the summary for leaders | — |
 
-**[A] = 5, [B] = 3.** With 8 interviews, 5 (62%) is clearly above a coin flip
-and enough to say the pain generalises within the segment; 4 is not
-distinguishable from chance. Below 3 (37%) the pain does not generalise and the
-ICP filter is wrong rather than the messaging. The 3–4 band is deliberately the
-"change" column, because that pattern — real pain, contained within one tool —
-is a repositioning signal, not a stop signal.
+### Where each number comes from
 
-**[C] = 25 companies.** Derived from the plan's own honest arithmetic rather
-than an aspiration: best-case week-1 reach of 8,000–20,000 readers, R2's ~5%
-visitor-to-run assumption giving 400–1,000 runs, of which most will be solo
-developers outside the ICP filter. At 5–10% matching the filter that is 20–100
-companies. 25 is the conservative end, and it is falsifiable within the window.
+**[A] = 5 and [B] = 3, out of 8 interviews.** These are one decision, not two,
+because what matters is the band between them. At n=8, five (62%) is clearly
+distinguishable from a coin flip and enough to say the pain generalises within
+the segment; four is not. Below three (37%) the pain does not generalise, and
+the honest conclusion is that the ICP filter is wrong rather than the
+messaging. The 3–4 band between them is deliberately the *change* column: real
+pain contained within a single tool is a repositioning signal, not a stop
+signal, and collapsing it into either neighbour would throw away the most
+informative outcome.
 
-**[D] = 15%, and this gate cannot currently be measured.** The team scan does
-not exist — §3.10 lists it as designed only. A gate that depends on an unbuilt
-artifact is not a gate, and the honest thing is to say so rather than to let a
-number imply a measurement. Either the team scan gets built before the launch
+**[C] = 25 companies.** Derived from the plan's own arithmetic rather than an
+aspiration. Best-case week-1 reach is 8,000–20,000 readers; R2's stated ~5%
+visitor-to-run assumption gives 400–1,000 runs; most of those will be solo
+developers who fall outside the ICP filter of 200–2,000 people with two or more
+AI tools. At 5–10% matching that filter, the range is 20–100 companies. 25 is
+the conservative end, and it is falsifiable inside the launch window, which is
+the only property that makes a gate useful.
+
+**[D] = 15%, and this gate cannot be measured today.** The team scan does not
+exist — §3.10 lists it as designed only. A threshold that depends on an unbuilt
+artifact is not a gate, and stating a number without saying so would imply a
+measurement that cannot happen. Either the team scan is built before the launch
 wave, or [D] is deferred and the individual→team leap is assessed qualitatively
-from design partners.
+from design partners instead. 15% is the proposed value *conditional on it
+being built*: below that, the three-layer report is not making the case for
+looking wider, which is a content problem rather than a thesis problem.
 
-**[E] = 14 days.** Long enough that a Slack message can survive one week of
-someone else's priorities, short enough that a null result still arrives inside
-the 30-day window with time to change something.
+**[E] = 14 days.** Long enough that a Slack message survives one week of
+somebody else's priorities, and short enough that a null result still lands
+inside the 30-day window with time left to change something in response.
 
 ## 3.10 What did we leave behind that Atlan can click, run or inspect?
 

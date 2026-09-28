@@ -34,17 +34,38 @@ embarrassing.** The scan ran on each repository in turn, and a skill cannot
 drift against itself, so a per-repo scan reports zero cross-repo drift by
 construction. The zero was a property of how the question was asked.
 
-Running the same engine over every repository *at once* finds drift immediately.
-That is the hook, and it is better than either earlier version because it is a
-real result rather than an argument:
+Running the same engine over every repository at once finds the drift
+immediately, and it is specific enough to be the whole hook:
 
-> Twelve skills exist in two public repositories with contents that no longer
-> match. Every one is an official skill copied into a community collection,
-> which then stood still while the original kept moving.
+> **Anthropic publishes 20 official agent skills. Twelve of them are in
+> circulation elsewhere in versions that no longer match the original — and
+> every single one of those twelve has drifted. Twelve for twelve.**
 
-The copies are two months behind — frozen at 2026-07-24 while the source moved
-on 2026-09-24 — and the largest divergences are substantial: 111 files differ in
-one skill, 108 in another, 53 in a third.
+Not "some copies go stale". Every copy found, without exception. The copies are
+two months behind — frozen at 2026-07-24 while Anthropic's repo moved on
+2026-09-24 — and the divergences are not cosmetic:
+
+| Anthropic skill | Files differing from the copy |
+|---|---|
+| `docx` | 111 |
+| `pptx` | 108 |
+| `xlsx` | 53 |
+| `slack-gif-creator` | 22 |
+| `skill-creator` | 19 |
+| `pdf` | 11 |
+| `mcp-builder` | 5 |
+| `brand-guidelines`, `canvas-design`, `internal-comms`, `theme-factory`, `webapp-testing` | 1 each |
+
+The copies still carry Anthropic's own `license: Proprietary. LICENSE.txt has
+complete terms` line, which is how you can tell these are vendored snapshots
+rather than independent work that happens to share a name.
+
+**Why naming Anthropic is fine, and naming the copier is not.** Anthropic is the
+source. Their repository is the one that moved forward correctly; nothing here
+reflects badly on them, and the finding is only legible if the canonical side
+has a name. The collection holding the stale copies is the side that a name
+would injure, and it gains nothing from being identified — the pattern is the
+point, not the party.
 
 ## The framing rule this post follows
 
@@ -70,7 +91,7 @@ courtesy.
 **Title**
 
 ```
-Show HN: 12 of the agent skills people install are already out of sync with their source
+Show HN: Every copy of an Anthropic official skill I could find had drifted
 ```
 
 **Body**
@@ -79,11 +100,12 @@ Show HN: 12 of the agent skills people install are already out of sync with thei
 I built a CLI that audits Claude Code / Codex agent-skill directories for
 drift: the same skill living in two places with contents that no longer match.
 
-Pointed at 951 skills across four public repositories, it finds 12 drifted
-pairs. Every one is the same shape — an official skill copied into a community
-collection, which then stood still while the original kept moving. The copies
-are about two months behind. In the worst cases the two versions differ by
-111, 108 and 53 files.
+Anthropic publishes 20 official agent skills. Twelve of them are in circulation
+elsewhere, and all twelve have diverged from the original. Not most — all of
+them. The copies are about two months behind, and the differences aren't
+cosmetic: 111 files differ in one skill, 108 in another, 53 in a third. They
+still carry Anthropic's own proprietary license line, so they're vendored
+snapshots rather than coincidental name collisions.
 
 I nearly published the opposite result. My first scan reported zero drift and I
 spent a while constructing an argument for why that was interesting — public
@@ -93,21 +115,21 @@ in turn, and a skill cannot drift against itself, so a per-repo scan reports
 zero cross-repo drift by construction. Running the same engine over every repo
 at once found the drift immediately.
 
-Two things I'd flag for anyone building something similar:
+Two things worth knowing if you're building something similar:
 
 - Scanning N repositories one at a time answers a different question from
-  scanning N repositories together, and the first one silently looks like good
-  news.
+  scanning them together, and the first one silently looks like good news.
 - My CLI was truncating its own JSON when piped. process.exit() discards
   buffered stdout because Node writes to pipes asynchronously — 146KB of a
-  1.4MB report, no error on either side. Writing to a file worked, which is why
-  it went unnoticed.
+  1.4MB report, no error on either side. Writing to a file worked, which is
+  why it went unnoticed.
 
-I'm not naming the collection. Vendoring a snapshot is a reasonable thing to
-do, and hand-syncing 800-odd skills against their upstreams is not reasonable
-to expect. The maintainers have the detail. The point isn't that someone was
-careless — it's that a copy with nothing connecting it back to its source will
-drift, every time, and nobody finds out until the outputs disagree.
+I'm not naming the collection holding the copies. Vendoring a snapshot is a
+reasonable thing to do, and hand-syncing 800-odd skills against their upstreams
+is not reasonable to expect of anyone. The maintainers have the detail. The
+point isn't that someone was careless — it's that a copy with nothing
+connecting it back to its source will drift, every time, and nobody finds out
+until the outputs disagree.
 
 The interesting case is inside a company allowing two or more AI tools: one
 skill, two copies, two admin consoles, each of which can only see its own.
@@ -150,44 +172,49 @@ nobody at Atlan reviewed this post.
 ## X thread
 
 ```
-1/ I scanned 951 public agent skills for drift — the same skill in two places,
-   contents no longer matching.
+1/ Anthropic publishes 20 official agent skills.
 
-   12 drifted pairs. The copies are ~2 months behind their source.
+   12 of them are in circulation elsewhere in versions that no longer match the
+   original.
 
-   I also nearly published the exact opposite result. 🧵
+   All 12 have drifted. Twelve for twelve. 🧵
 
-2/ My first scan said zero drift. I started writing the clever explanation:
-   public repos are single sources of truth, drift only happens privately, etc.
+2/ The copies are ~2 months behind — frozen 24 Jul while the source moved on
+   24 Sep.
 
-   It was wrong. The scanner ran on each repo in turn — and a skill can't drift
-   against itself.
+   Not cosmetic either: 111 files differ in one skill, 108 in another, 53 in a
+   third.
 
-3/ Scanning N repos one at a time answers a different question from scanning
+3/ I nearly published the opposite. My first scan said zero drift and I started
+   writing the clever explanation — public repos are single sources of truth,
+   drift only happens privately, etc.
+
+   Wrong. The scanner ran on each repo in turn. A skill can't drift against
+   itself.
+
+4/ Scanning N repos one at a time answers a different question from scanning
    them together. The first version silently looks like good news.
 
-   Same engine, all repos at once: 12 pairs, immediately. Worst cases differ by
-   111, 108 and 53 files.
+   Same engine, all repos at once: 12 pairs, immediately.
 
-4/ I'm not naming the collection. Vendoring a snapshot of a good library is
+5/ I'm not naming the collection holding the copies. Vendoring a snapshot is
    reasonable; hand-syncing 800 skills against upstream is not.
 
-   A copy with nothing linking it back to its source drifts. Every time. That's
-   the finding.
+   A copy with nothing linking it back to its source drifts. Every time.
 
-5/ Method, counts and per-repo cards: https://drift.aryaman.tech
+6/ Method, counts and per-repo cards: https://drift.aryaman.tech
 
    Security findings are reported by category across the whole sample and never
    tied to a named repo.
 
-6/ Run it on your own repos — local, read-only, no account, no network call:
+7/ Run it on your own repos — local, read-only, no account, no network call:
 
    git clone https://github.com/Aryaman3012/gtm
    node gtm/cli/skillsdrift.js .claude/skills .codex
 
    Most interesting if your company allows two or more AI tools.
 
-7/ Disclosure: candidate exercise for Atlan's GTM challenge. Not an Atlan
+8/ Disclosure: candidate exercise for Atlan's GTM challenge. Not an Atlan
    product, unaffiliated with any company in the scan, nobody at Atlan reviewed
    it.
 ```
@@ -195,9 +222,9 @@ nobody at Atlan reviewed this post.
 ## LinkedIn
 
 ```
-I scanned 951 public agent skills looking for drift — the same skill in two
-places whose contents no longer match. I found twelve, and I very nearly
-published the opposite.
+Anthropic publishes 20 official agent skills. Twelve of them are in circulation
+elsewhere in versions that no longer match the original — and every one of those
+twelve has drifted. Twelve for twelve.
 
 My first scan reported zero, and I spent a while building the explanation: a
 public repository is a single source of truth, so drift must be something that
@@ -206,9 +233,9 @@ in turn, and a skill cannot drift against itself. The zero was a property of how
 I had asked the question. Run the same engine across every repository at once
 and the drift is immediate.
 
-What it found: twelve skills copied from an official library into a community
-collection, now roughly two months behind their source. The largest divergences
-run to 111, 108 and 53 files.
+The copies are roughly two months behind their source, and the differences are
+substantial rather than cosmetic: 111 files differ in one skill, 108 in another,
+53 in a third.
 
 Nobody was careless. Vendoring a snapshot of a good library is sensible, and
 keeping hundreds of skills in step with their upstreams by hand is not something
